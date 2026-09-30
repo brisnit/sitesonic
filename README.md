@@ -1,6 +1,6 @@
-# Stagekit site
+# SiteSonic site
 
-Marketing site and package storefront for Stagekit, a creative studio for independent musicians. It is one landing page with anchored sections and a package request form.
+Marketing site and package storefront for SiteSonic, a creative studio for independent musicians. It is one landing page with anchored sections and a package request form.
 
 Built with [Astro](https://astro.build) as a static site. It ships almost no JavaScript: only the menu, scroll reveal, and request form.
 
@@ -23,7 +23,7 @@ Built with [Astro](https://astro.build) as a static site. It ships almost no Jav
 | Colors, type scale, spacing                                                          | `:root` in `src/styles/global.css`                   |
 | Page section order                                                                   | `src/pages/index.astro`                              |
 
-"Stagekit" is a working name. Changing `brand.name` updates it everywhere, including the footer wordmark, which resizes to fit. Then run `npm run og` to refresh the sharing image.
+Changing `brand.name` updates it everywhere, including the footer wordmark, which resizes to fit. Then run `npm run og` to refresh the sharing image.
 
 ### Replacing image placeholders
 

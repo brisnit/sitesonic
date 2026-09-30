@@ -1,6 +1,6 @@
 /**
  * ─────────────────────────────────────────────────────────────────────────────
- *  STAGEKIT — central site content
+ *  SITESONIC — central site content
  * ─────────────────────────────────────────────────────────────────────────────
  *  Nearly every word on the site lives here. Edit this file to change the brand
  *  name, packages, prices, FAQ, team, contact details, and social links.
@@ -10,10 +10,10 @@
  */
 
 // ── Brand ────────────────────────────────────────────────────────────────────
-// "Stagekit" is a working name. Changing `name` updates the header, footer,
+// Changing `name` updates the header, footer,
 // page title, social metadata, and every sentence that mentions the studio.
 export const brand = {
-  name: 'Stagekit',
+  name: 'SiteSonic',
   tagline: 'Your sound. Your identity. Your next stage.',
   description:
     'Websites, branding, and artist identities for independent musicians. Three fixed-price packages, from a simple artist website to a complete identity and launch system.',
