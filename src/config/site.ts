@@ -183,11 +183,10 @@ export const worldFeature = {
 };
 
 // ── Work preview ────────────────────────────────────────────────────────────
-// Placeholder slots for future work. Swap in real projects via
-// `src/config/images.ts` and update the captions below.
+// Images and alt text live in `src/config/images.ts`.
 export const work = {
   headline: 'The work',
-  body: 'Artist websites, identities, photography, and social templates will be shown here as projects launch.',
+  body: 'Websites, identities, photography, and social templates, designed to work together as one presence.',
   items: [
     { key: 'workWebsite', label: 'Artist website preview', caption: 'Artist websites' },
     { key: 'workIdentity', label: 'Identity preview', caption: 'Visual identities' },
@@ -221,17 +220,10 @@ export const howItWorks = {
 };
 
 // ── The studio ──────────────────────────────────────────────────────────────
-// TODO(launch): replace placeholder names and bios. Photos live in
-// `src/config/images.ts` under the matching `image` key.
+// The studio photo lives in `src/config/images.ts` (the `studio` slot).
 export const studio = {
   headline: 'Real people helping you bring your music into focus.',
   body: `${B} is a small team working across design, branding, photography, and marketing strategy. You work directly with the people making your site and identity.`,
-  team: [
-    { name: 'Team member name', role: 'Design', bio: 'Short bio to be added.', image: 'team1' },
-    { name: 'Team member name', role: 'Branding', bio: 'Short bio to be added.', image: 'team2' },
-    { name: 'Team member name', role: 'Photography', bio: 'Short bio to be added.', image: 'team3' },
-    { name: 'Team member name', role: 'Marketing strategy', bio: 'Short bio to be added.', image: 'team4' },
-  ] as const,
 };
 
 // ── FAQ ─────────────────────────────────────────────────────────────────────

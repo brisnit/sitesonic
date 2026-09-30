@@ -55,7 +55,7 @@ const descId = `media-${slot}-desc`;
         src={data.src}
         alt={data.alt ?? ''}
         formats={['avif', 'webp']}
-        widths={[480, 800, 1200, 1600, 2400].filter((w) => w <= data.src!.width)}
+        widths={[...new Set([480, 800, 1200, 1600, 2400].filter((w) => w < data.src!.width).concat(data.src.width))]}
         sizes={sizes}
         loading={eager ? 'eager' : 'lazy'}
         fetchpriority={eager ? 'high' : 'auto'}

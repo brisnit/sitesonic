@@ -18,8 +18,8 @@ Built with [Astro](https://astro.build) as a static site. It ships almost no Jav
 
 | What                                                                                 | Where                                                |
 | ------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| Brand name, tagline, all copy, packages and prices, FAQ, team, contact, social links | `src/config/site.ts`                                 |
-| Images (hero, World feature, work previews, team photos)                             | `src/config/images.ts` + files in `src/assets/images/` |
+| Brand name, tagline, all copy, packages and prices, FAQ, contact, social links        | `src/config/site.ts`                                 |
+| Images and hero video (hero, World feature, work previews, studio photo)             | `src/config/images.ts` + files in `src/assets/images/` |
 | Colors, type scale, spacing                                                          | `:root` in `src/styles/global.css`                   |
 | Page section order                                                                   | `src/pages/index.astro`                              |
 
@@ -42,9 +42,20 @@ Astro resizes the image and serves AVIF/WebP automatically.
 
 ### The hero video
 
-The hero plays `public/Hero.mp4` (muted, looped) over a poster frame at `src/assets/images/hero-poster.jpg`. It pauses when scrolled off screen, has a pause/play button, and isn't downloaded at all for visitors who prefer reduced motion (they see the poster).
+The hero plays `public/hero.mp4` (muted, looped) over a poster frame at `src/assets/images/hero-poster.jpg`. It pauses when scrolled off screen, has a pause/play button, and isn't downloaded at all for visitors who prefer reduced motion (they see the poster).
 
-To swap the video: replace `public/Hero.mp4`, then replace the poster with a still of the new video's **first frame** so there's no jump when playback starts. Crop and alt text are the `hero` slot's `focus` and `alt` in `src/config/images.ts`. Keep hero videos short (around 10 s) and under ~3 MB. The file doesn't need an audio track, since it always plays muted.
+To swap the video: replace `public/hero.mp4`, then replace the poster with a still of the new video's **first frame** so there's no jump when playback starts. Crop and alt text are the `hero` slot's `focus` and `alt` in `src/config/images.ts`. Keep hero videos short (around 10 s) and under ~3 MB. Avoid letterboxed (black-bar) shots, since the hero crops the sides and the bars would show. The file doesn't need an audio track, since it always plays muted.
+
+With [ffmpeg](https://ffmpeg.org), this re-encodes a video for the web and grabs its first frame as the poster:
+
+```sh
+ffmpeg -i new-video.mp4 -an -c:v libx264 -profile:v high -preset slow -crf 24 -pix_fmt yuv420p -movflags +faststart public/hero.mp4
+ffmpeg -i public/hero.mp4 -frames:v 1 -q:v 2 src/assets/images/hero-poster.jpg
+```
+
+### Source files
+
+Photos in `src/assets/images/` are high-quality JPEGs (use JPEG or WebP sources for photos: a PNG source makes the build emit large PNG fallbacks). Original, unoptimized files are kept locally in `source-media/`, which is git-ignored and never shipped.
 
 ## Before launch: what still needs configuring
 
@@ -58,8 +69,7 @@ Search the code for `TODO(launch)`.
 2. **Payments.** Not integrated, by design. The form is a request ("Request this package"), and checkout follows once availability and scope are confirmed. When you are ready, send a payment link (Stripe Payment Links, Square, etc.) in your reply, or add checkout as a later step.
 3. **Production URL.** Set `SITE_URL` (in `.env` or `astro.config.mjs`) for canonical and social image URLs.
 4. **Contact email and social links.** In `src/config/site.ts` (`contact`, `socials`). Empty values render as labeled placeholders.
-5. **Team names, bios, and photos.** `studio.team` in `src/config/site.ts`.
-6. **Supported photo locations.** The copy says "supported locations" generically. List them in the FAQ once they're decided.
+5. **Supported photo locations.** The copy says "supported locations" generically. List them in the FAQ once they're decided.
 
 ## Request payload
 

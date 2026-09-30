@@ -7,3 +7,6 @@ dist/
 .DS_Store
 test-results/
 screenshots/
+
+# Original, unoptimized media (kept locally, not shipped)
+source-media/

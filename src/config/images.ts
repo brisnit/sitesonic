@@ -22,6 +22,12 @@
  */
 import type { ImageMetadata } from 'astro';
 import heroPoster from '../assets/images/hero-poster.jpg';
+import worldPortrait from '../assets/images/world-portrait.jpg';
+import workWebsite from '../assets/images/work-website.jpg';
+import workIdentity from '../assets/images/work-identity.jpg';
+import workPhotography from '../assets/images/work-photography.jpg';
+import workSocial from '../assets/images/work-social.jpg';
+import studioPhoto from '../assets/images/studio.jpg';
 
 export interface ImageSlot {
   /** Label shown on the placeholder. */
@@ -32,7 +38,7 @@ export interface ImageSlot {
   ratio: string;
   src?: ImageMetadata;
   alt?: string;
-  /** Path to a video in `public/`, e.g. '/Hero.mp4'. Takes priority over `src`. */
+  /** Path to a video in `public/`, e.g. '/hero.mp4'. Takes priority over `src`. */
   video?: string;
   /** Still frame for the video. */
   poster?: ImageMetadata;
@@ -46,24 +52,54 @@ const slots = {
     brief: 'Musician portrait or live performance',
     // Landscape source: shown 5:4 on desktop, 16:9 on tablet, 4:3 on phones.
     ratio: '5 / 4',
-    video: '/Hero.mp4',
+    video: '/hero.mp4',
     poster: heroPoster,
-    focus: '56% 40%',
-    alt: 'A musician playing an acoustic guitar on a dark stage lit in teal, with smoke drifting behind.',
+    alt: 'A montage of artist work: a photographer shooting a band in a studio, a singer seated in teal haze under stage lights, and an artist website and merchandise on screen.',
   },
   world: {
     label: 'World package image',
     brief: 'Editorial artist portrait with styling and set',
     ratio: '4 / 5',
+    src: worldPortrait,
+    focus: '50% 30%',
+    alt: 'An artist in an oversized black jacket and wide trousers seated on a chrome stool, in a styled set of glass panels, green drapery, and haze.',
   },
-  workWebsite: { label: 'Artist website preview', brief: 'Screenshot or device mockup', ratio: '16 / 10' },
-  workIdentity: { label: 'Identity preview', brief: 'Wordmark, palette, typography', ratio: '4 / 5' },
-  workPhoto: { label: 'Photography preview', brief: 'Artist photo session selects', ratio: '4 / 5' },
-  workSocial: { label: 'Social templates preview', brief: 'Branded post and story templates', ratio: '16 / 10' },
-  team1: { label: 'Team photo', brief: 'Portrait', ratio: '4 / 5' },
-  team2: { label: 'Team photo', brief: 'Portrait', ratio: '4 / 5' },
-  team3: { label: 'Team photo', brief: 'Portrait', ratio: '4 / 5' },
-  team4: { label: 'Team photo', brief: 'Portrait', ratio: '4 / 5' },
+  workWebsite: {
+    label: 'Artist website preview',
+    brief: 'Screenshot or device mockup',
+    ratio: '3 / 2',
+    src: workWebsite,
+    alt: 'An artist website with a dark, green-lit band photo and tour dates, shown on a desktop monitor in a home studio.',
+  },
+  workIdentity: {
+    label: 'Identity preview',
+    brief: 'Wordmark, palette, typography',
+    ratio: '3 / 2',
+    src: workIdentity,
+    alt: 'An artist identity laid out on a table: T-shirt, cap, vinyl record, stickers, and a brand sheet with wordmark, color palette, and typefaces.',
+  },
+  workPhoto: {
+    label: 'Photography preview',
+    brief: 'Artist photo session selects',
+    ratio: '3 / 2',
+    src: workPhotography,
+    alt: 'A photographer shooting a four-piece band seated together in front of a studio backdrop.',
+  },
+  workSocial: {
+    label: 'Social templates preview',
+    brief: 'Branded post and story templates',
+    ratio: '3 / 2',
+    src: workSocial,
+    alt: 'Six square social posts for a band in black, cream, green, and pink, announcing a new single, an EP, and live shows.',
+  },
+  studio: {
+    label: 'Studio photo',
+    brief: 'The studio and team at work',
+    ratio: '16 / 9',
+    src: studioPhoto,
+    focus: '50% 60%',
+    alt: 'The studio: designers at shared desks editing artwork and photos, with a wall of posters and mood boards and palm trees outside the window.',
+  },
 } satisfies Record<string, ImageSlot>;
 
 export type ImageKey = keyof typeof slots;
