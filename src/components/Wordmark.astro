@@ -4,13 +4,14 @@ import { brand } from '../config/site';
 interface Props {
   size?: 'default' | 'huge';
   as?: 'a' | 'span';
+  href?: string;
 }
-const { size = 'default', as = 'a' } = Astro.props;
+const { size = 'default', as = 'a', href = '#top' } = Astro.props;
 const Tag = as;
 const chars = brand.name.length + 0.4; // + the dot
 ---
 
-<Tag class:list={['wordmark', `wordmark--${size}`]} style={`--chars: ${chars}`} href={as === 'a' ? '#top' : undefined} aria-label={as === 'a' ? `${brand.name}, back to top` : undefined}>
+<Tag class:list={['wordmark', `wordmark--${size}`]} style={`--chars: ${chars}`} href={as === 'a' ? href : undefined} aria-label={as === 'a' ? (href === '#top' ? `${brand.name}, back to top` : `${brand.name} home`) : undefined}>
   {brand.name}<span class="wordmark__dot" aria-hidden="true">.</span>
 </Tag>
 

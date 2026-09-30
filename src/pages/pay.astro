@@ -1,0 +1,181 @@
+---
+/**
+ * Private payment page. Not linked from the site and marked noindex.
+ * Share /pay, or /pay?package=<id> to highlight one package, with artists
+ * once their scope is confirmed. Links come from `paymentLink` in site config.
+ */
+import Base from '../layouts/Base.astro';
+import Wordmark from '../components/Wordmark.astro';
+import { brand, formatPrice, packages, payPage } from '../config/site';
+---
+
+<Base title={`${payPage.title} · ${brand.name}`} description={payPage.body} noindex>
+  <header class="bar">
+    <div class="wrap bar__inner">
+      <Wordmark href="/" />
+      <a class="link bar__back" href="/">Back to site</a>
+    </div>
+  </header>
+
+  <main id="main" class="wrap pay">
+    <h1 class="h1 pay__title">{payPage.title}</h1>
+    <p class="lead muted pay__intro">{payPage.body}</p>
+
+    <ul role="list" class="plans">
+      {
+        packages.map((p) => (
+          <li class="plan" id={p.id} data-plan={p.id}>
+            <div class="plan__info">
+              <h2 class="plan__name">{p.name}</h2>
+              <p class="plan__tag">{p.tagline}</p>
+            </div>
+            <p class="plan__price">{formatPrice(p.price)}</p>
+            <a class="btn plan__btn" href={p.paymentLink} rel="noopener">
+              Pay for {p.name}
+              <span class="arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="pay__notes">
+      {payPage.notes.map((n) => <p>{n}</p>)}
+      <p>
+        {payPage.notYet} <a class="link" href="/#packages">Choose your package</a>.
+      </p>
+    </div>
+  </main>
+
+  <footer class="wrap foot">
+    <p>© {new Date().getFullYear()} {brand.name}</p>
+  </footer>
+</Base>
+
+<style>
+  .bar {
+    border-bottom: 1px solid var(--rule);
+  }
+  .bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--header-h);
+  }
+  .bar__back {
+    font-weight: 550;
+    padding-block: 0.5rem;
+  }
+
+  .pay {
+    padding-block: clamp(3rem, 8vw, 6.5rem) clamp(4rem, 8vw, 7rem);
+  }
+  .pay__intro {
+    margin-top: 1.5rem;
+    max-width: 40ch;
+  }
+
+  .plans {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    border-top: 1px solid var(--rule-strong);
+  }
+  .plan {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 15rem 13rem;
+    align-items: center;
+    gap: 1rem clamp(1.5rem, 4vw, 3.5rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem) 0;
+    border-bottom: 1px solid var(--rule);
+    scroll-margin-top: 2rem;
+  }
+  .plan::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    height: 6px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 400ms var(--ease);
+  }
+  .plan:hover::before,
+  .plan:focus-within::before,
+  .plan.is-selected::before {
+    transform: scaleX(1);
+  }
+  .plan__name {
+    font-size: var(--fs-l);
+    font-weight: 850;
+    font-stretch: 118%;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .plan__tag {
+    margin-top: 0.5rem;
+    color: var(--ink-soft);
+  }
+  .plan__price {
+    text-align: right;
+    font-size: clamp(2.25rem, 4.5vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .plan__btn {
+    justify-self: stretch;
+  }
+  .plan.is-selected .plan__btn {
+    --btn-bg: var(--accent);
+    --btn-fg: var(--on-accent);
+  }
+  .plan.is-selected .plan__btn:hover {
+    --btn-bg: var(--ink);
+    --btn-fg: var(--bg);
+  }
+
+  .pay__notes {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    max-width: 62ch;
+    color: var(--ink-soft);
+    font-size: 1rem;
+  }
+  .pay__notes p + p {
+    margin-top: 0.75rem;
+  }
+
+  .foot {
+    padding-block: 1.5rem 2rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-soft);
+    font-size: 1rem;
+  }
+
+  @media (max-width: 720px) {
+    .plan {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .plan__price {
+      text-align: left;
+    }
+    .plan__btn {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
+
+<script>
+  // /pay?package=world highlights that package and scrolls to it.
+  const id = new URLSearchParams(location.search).get('package');
+  const plan = id ? document.querySelector<HTMLElement>(`[data-plan="${CSS.escape(id)}"]`) : null;
+  if (plan) {
+    plan.classList.add('is-selected');
+    plan.scrollIntoView({ block: 'center' });
+  }
+</script>

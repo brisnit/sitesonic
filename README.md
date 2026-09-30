@@ -65,7 +65,7 @@ Search the code for `TODO(launch)`.
    - After activating, FormSubmit emails you a random alias string. Swap it in for the address in the endpoint (`https://formsubmit.co/ajax/<alias>`) to keep your email out of the page source and reduce spam.
    - To use a different service (Formspree, Basin, your own function), set `PUBLIC_INTAKE_ENDPOINT` in `.env`. It receives a JSON POST of labeled fields.
    - It never shows a success state unless the service confirms delivery.
-2. **Payments.** Not integrated, by design. The form is a request ("Request this package"), and checkout follows once availability and scope are confirmed. When you are ready, send a payment link (Stripe Payment Links, Square, etc.) in your reply, or add checkout as a later step.
+2. **Payments (Stripe Payment Links).** Each package's `paymentLink` in `src/config/site.ts` points to a Stripe Payment Link. The flow is request first, pay after: once you've confirmed an artist's scope, send them `https://<your-domain>/pay?package=launch` (or `identity` / `world`), which highlights their package. `/pay` isn't linked from the site and is marked `noindex`. To change a price, update both the Stripe product and `price` in the config.
 3. **Production URL.** Set `SITE_URL` (in `.env` or `astro.config.mjs`) for canonical and social image URLs.
 4. **Contact email and social links.** In `src/config/site.ts` (`contact`, `socials`). Empty values render as labeled placeholders.
 5. **Supported photo locations.** The copy says "supported locations" generically. List them in the FAQ once they're decided.

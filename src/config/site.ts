@@ -79,6 +79,8 @@ export interface Package {
   audience: string;
   includes: string[];
   cta: string;
+  /** Stripe Payment Link. Shared with artists after scope is confirmed (see /pay). */
+  paymentLink: string;
   /** Gives the package the accent treatment. */
   featured?: boolean;
 }
@@ -102,6 +104,7 @@ export const packages: Package[] = [
       'Website handoff guide',
     ],
     cta: 'Choose Launch',
+    paymentLink: 'https://buy.stripe.com/3cI7sM5DtadY9adgWY3AY02',
   },
   {
     id: 'identity',
@@ -123,6 +126,7 @@ export const packages: Package[] = [
       'Two consolidated revision rounds',
     ],
     cta: 'Choose Identity',
+    paymentLink: 'https://buy.stripe.com/14A7sM4zp3PA8696ik3AY01',
   },
   {
     id: 'world',
@@ -147,6 +151,7 @@ export const packages: Package[] = [
       'Two consolidated revision rounds',
     ],
     cta: 'Start your artist identity',
+    paymentLink: 'https://buy.stripe.com/28E14o7LBcm65Y1dKM3AY00',
     featured: true,
   },
 ];
@@ -318,6 +323,19 @@ export const intake = {
     title: 'This form isn’t connected yet.',
     body: 'Your request was not sent. Package requests will open soon. Copy your details below so you don’t lose them.',
   },
+};
+
+// ── Payment page (/pay) ─────────────────────────────────────────────────────
+// Not linked from the site and hidden from search engines. Send artists
+// /pay (or /pay?package=world to highlight theirs) once scope is confirmed.
+export const payPage = {
+  title: 'Pay for your package',
+  body: 'Use this page once we’ve confirmed your project’s scope and schedule by email. Payment is handled securely by Stripe.',
+  notes: [
+    'All prices are one-time project fees. Domain, hosting, platform subscriptions, payment processing, and ongoing services are separate.',
+    'Photo session coverage for World is confirmed with you before payment.',
+  ],
+  notYet: 'Haven’t sent a request yet? Start there, and we’ll confirm availability before you pay.',
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────────────

@@ -6,11 +6,14 @@ import { brand } from '../config/site';
 interface Props {
   title?: string;
   description?: string;
+  /** Keep the page out of search results. */
+  noindex?: boolean;
 }
 
 const {
   title = `${brand.name} · Websites and artist identities for independent musicians`,
   description = brand.description,
+  noindex = false,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -25,6 +28,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#f5f1e8" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
