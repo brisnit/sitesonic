@@ -1,0 +1,87 @@
+---
+import { intro } from '../config/site';
+---
+
+<section class="section intro" aria-labelledby="intro-title">
+  <div class="wrap intro__grid">
+    <h2 id="intro-title" class="h1 intro__title" data-reveal>{intro.headline}</h2>
+    <div class="prose intro__body" data-reveal style="--i: 1">
+      {intro.body.map((p) => <p>{p}</p>)}
+    </div>
+  </div>
+
+  <div class="wrap">
+    <ul role="list" class="pillars" aria-label="What we bring together">
+      {
+        intro.pillars.map((p, i) => (
+          <li class="pillars__item" data-reveal style={`--i: ${i}`}>
+            {p}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .intro {
+    padding-top: calc(var(--section) * 0.9);
+  }
+  .intro__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+  }
+  .intro__title {
+    grid-column: 1 / span 8;
+  }
+  .intro__body {
+    grid-column: 9 / -1;
+    padding-top: 0.6rem;
+    font-size: var(--fs-body);
+  }
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    margin-top: clamp(3.5rem, 8vw, 7rem);
+    border-top: 1px solid var(--rule-strong);
+  }
+  .pillars__item {
+    padding: 1.1rem 0 0;
+    font-size: var(--fs-l);
+    font-weight: 750;
+    font-stretch: 112%;
+    letter-spacing: -0.035em;
+    line-height: 1;
+    border-left: 1px solid var(--rule);
+    padding-left: 1rem;
+    transition: color var(--fast) var(--ease);
+  }
+  .pillars__item:first-child {
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  @media (max-width: 1000px) {
+    .intro__title,
+    .intro__body {
+      grid-column: 1 / -1;
+    }
+    .intro__body {
+      padding-top: 0;
+    }
+  }
+  @media (max-width: 700px) {
+    .pillars {
+      grid-template-columns: 1fr;
+    }
+    .pillars__item,
+    .pillars__item:first-child {
+      border-left: 0;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid var(--rule);
+    }
+  }
+</style>

@@ -1,0 +1,681 @@
+---
+/**
+ * Package request form, opened by any element with `data-open-intake="<package id>"`.
+ * Also opens on load when the URL has `?package=<id>`.
+ * Behaviour lives in `src/scripts/intake.ts`.
+ */
+import { formatPrice, intake, packages } from '../config/site';
+
+const connected = intake.endpoint.length > 0;
+const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
+---
+
+<dialog class="intake" aria-labelledby="intake-title" aria-describedby="intake-intro" data-intake>
+  <div class="intake__panel">
+    <header class="intake__bar">
+      <h2 id="intake-title" class="intake__title" tabindex="-1">{intake.title}</h2>
+      <button type="button" class="intake__close" data-intake-close>
+        <span class="visually-hidden">Close form</span>
+        <span aria-hidden="true" class="intake__x"></span>
+      </button>
+    </header>
+
+    <div class="intake__scroll" data-intake-scroll>
+      <!-- ── Form view ─────────────────────────────────────────────── -->
+      <div data-view="form">
+        <p id="intake-intro" class="intake__intro">{intake.intro}</p>
+
+        {
+          !connected && (
+            <div class="notice" data-integration="intake-endpoint">
+              <p class="notice__title">Requests aren’t connected yet</p>
+              <p>
+                You can fill this in, but it won’t be sent anywhere until an inquiry endpoint is configured. We’ll
+                never show a request as sent unless it actually was.
+              </p>
+            </div>
+          )
+        }
+
+        <form class="form" novalidate data-intake-form data-endpoint={intake.endpoint}>
+          <div class="errors" data-error-summary tabindex="-1" hidden>
+            <p class="errors__title">Please check a few things:</p>
+            <ul data-error-list></ul>
+          </div>
+
+          <!-- Package -->
+          <fieldset class="group" data-field="package" aria-describedby="package-error">
+            <legend class="group__legend">Package</legend>
+            <div class="pkgs">
+              {
+                packages.map((p) => (
+                  <label class="pkgopt">
+                    <input type="radio" name="package" value={p.id} required />
+                    <span class="pkgopt__main">
+                      <span class="pkgopt__name">{p.name}</span>
+                      <span class="pkgopt__tag">{p.tagline}</span>
+                    </span>
+                    <span class="pkgopt__price">{formatPrice(p.price)}</span>
+                  </label>
+                ))
+              }
+            </div>
+            <p class="field__error" id="package-error" data-error-for="package"></p>
+          </fieldset>
+
+          <!-- About you -->
+          <fieldset class="group">
+            <legend class="group__legend">About you</legend>
+
+            <div class="field" data-field="artistName">
+              <label class="field__label" for="f-artist">Artist or band name</label>
+              <input class="field__input" id="f-artist" name="artistName" type="text" autocomplete="organization" required aria-describedby="artistName-error" />
+              <p class="field__error" id="artistName-error" data-error-for="artistName"></p>
+            </div>
+
+            <div class="field" data-field="contactName">
+              <label class="field__label" for="f-contact">Your name</label>
+              <input class="field__input" id="f-contact" name="contactName" type="text" autocomplete="name" required aria-describedby="contactName-error" />
+              <p class="field__error" id="contactName-error" data-error-for="contactName"></p>
+            </div>
+
+            <div class="field" data-field="email">
+              <label class="field__label" for="f-email">Email</label>
+              <input class="field__input" id="f-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="email-error" />
+              <p class="field__error" id="email-error" data-error-for="email"></p>
+            </div>
+
+            <div class="field" data-field="location">
+              <label class="field__label" for="f-location">City and country</label>
+              <input class="field__input" id="f-location" name="location" type="text" placeholder="e.g. Austin, United States" required aria-describedby="location-error" />
+              <p class="field__error" id="location-error" data-error-for="location"></p>
+            </div>
+
+            <div class="field" data-field="links">
+              <label class="field__label" for="f-links">Music and social links <span class="field__opt">optional</span></label>
+              <p class="field__hint" id="links-hint">Streaming profiles, socials, or anywhere we can hear your music. One per line.</p>
+              <textarea class="field__input" id="f-links" name="links" rows="3" aria-describedby="links-hint links-error"></textarea>
+              <p class="field__error" id="links-error" data-error-for="links"></p>
+            </div>
+          </fieldset>
+
+          <!-- World only -->
+          <fieldset class="group group--world" data-world-only hidden>
+            <legend class="group__legend">Photography (World)</legend>
+
+            <div class="field" data-field="photoNeed" role="radiogroup" aria-labelledby="photoNeed-label" aria-describedby="photoNeed-hint photoNeed-error">
+              <p class="field__label" id="photoNeed-label">Do you need the photo session?</p>
+              <p class="field__hint" id="photoNeed-hint">Sessions are available in supported locations. Coverage is confirmed before payment.</p>
+              <div class="choices choices--row">
+                <label class="choice"><input type="radio" name="photoNeed" value="yes" /><span>Yes</span></label>
+                <label class="choice"><input type="radio" name="photoNeed" value="no" /><span>No, I have photos</span></label>
+                <label class="choice"><input type="radio" name="photoNeed" value="unsure" /><span>Not sure yet</span></label>
+              </div>
+              <p class="field__error" id="photoNeed-error" data-error-for="photoNeed"></p>
+            </div>
+
+            <div class="field" data-field="photoLocation" data-photo-location hidden>
+              <label class="field__label" for="f-photo-location">Where would the photo session take place?</label>
+              <input class="field__input" id="f-photo-location" name="photoLocation" type="text" placeholder="City, region, country" aria-describedby="photoLocation-error" />
+              <p class="field__error" id="photoLocation-error" data-error-for="photoLocation"></p>
+            </div>
+          </fieldset>
+
+          <!-- Materials -->
+          <fieldset class="group" data-field="materials">
+            <legend class="group__legend">What do you already have?</legend>
+            <p class="field__hint">Select anything that’s ready to use. It’s fine if the answer is none.</p>
+            <div class="choices">
+              {
+                intake.materials.map((m) => (
+                  <label class="choice">
+                    <input type="checkbox" name="materials" value={m} />
+                    <span>{m}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <!-- Help with -->
+          <fieldset class="group" data-field="helpWith" aria-describedby="helpWith-error">
+            <legend class="group__legend">What do you want help with?</legend>
+            <div class="choices">
+              {
+                intake.helpWith.map((m) => (
+                  <label class="choice">
+                    <input type="checkbox" name="helpWith" value={m} />
+                    <span>{m}</span>
+                  </label>
+                ))
+              }
+            </div>
+            <p class="field__error" id="helpWith-error" data-error-for="helpWith"></p>
+          </fieldset>
+
+          <!-- Project -->
+          <fieldset class="group">
+            <legend class="group__legend">Your project</legend>
+
+            <div class="field" data-field="launchDate">
+              <label class="field__label" for="f-date">Preferred launch date <span class="field__opt">optional</span></label>
+              <p class="field__hint" id="launchDate-hint">A release, show, or tour date helps. We confirm the schedule after reviewing your materials.</p>
+              <input class="field__input field__input--date" id="f-date" name="launchDate" type="date" aria-describedby="launchDate-hint launchDate-error" />
+              <p class="field__error" id="launchDate-error" data-error-for="launchDate"></p>
+            </div>
+
+            <div class="field" data-field="description">
+              <label class="field__label" for="f-desc">Your music and goals</label>
+              <p class="field__hint" id="description-hint">A few sentences on your sound, where you are now, and what you want this project to do.</p>
+              <textarea class="field__input" id="f-desc" name="description" rows="5" required aria-describedby="description-hint description-error"></textarea>
+              <p class="field__error" id="description-error" data-error-for="description"></p>
+            </div>
+          </fieldset>
+
+          <!-- Spam trap: hidden from people and assistive tech -->
+          <div class="hp" aria-hidden="true">
+            <label>Leave this empty <input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <div class="form__footer">
+            <p class="form__note">
+              This is a request, not a purchase. No payment is taken here. Checkout follows once we confirm availability and scope.
+            </p>
+            <button type="submit" class="btn btn--accent btn--block form__submit" data-submit>
+              <span data-submit-label>{intake.submitLabel}</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </button>
+            <div class="form__status" role="status" aria-live="polite" data-status></div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ── Result views (shown only after a real outcome) ────────── -->
+      <div class="result" data-view="success" hidden>
+        <p class="result__mark" aria-hidden="true">✓</p>
+        <h3 class="result__title" tabindex="-1">{intake.success.title}</h3>
+        <p class="result__body">{intake.success.body}</p>
+        <button type="button" class="btn" data-intake-close>Close</button>
+      </div>
+
+      <div class="result" data-view="unsent" hidden>
+        <h3 class="result__title" tabindex="-1">{intake.notConnected.title}</h3>
+        <p class="result__body">{intake.notConnected.body}</p>
+        <label class="field__label" for="f-summary">Your request</label>
+        <textarea class="field__input result__summary" id="f-summary" rows="12" readonly data-summary></textarea>
+        <div class="result__actions">
+          <button type="button" class="btn" data-copy-summary>Copy details</button>
+          <button type="button" class="btn btn--ghost" data-back-to-form>Back to form</button>
+        </div>
+        <p class="form__status" role="status" aria-live="polite" data-copy-status></p>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="intake-packages" set:html={JSON.stringify(pkgData)} />
+
+<style>
+  .intake {
+    --panel-w: min(42rem, 100%);
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: var(--panel-w);
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 0;
+    background: var(--bg);
+    color: var(--ink);
+    overflow: hidden;
+  }
+  .intake::backdrop {
+    background: rgb(22 20 15 / 0.55);
+    backdrop-filter: blur(2px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .intake[open] {
+      animation: sheet-in 420ms var(--ease);
+    }
+    .intake[open]::backdrop {
+      animation: fade-in 300ms ease;
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  .intake__panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .intake__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+    border-bottom: 1px solid var(--rule);
+  }
+  .intake__title {
+    font-size: var(--fs-m);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .intake__title:focus {
+    outline: none;
+  }
+  .intake__close {
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: none;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    transition: background-color var(--fast) var(--ease);
+  }
+  .intake__close:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .intake__x::before,
+  .intake__x::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1rem;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .intake__x::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+  .intake__scroll {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 1.75rem clamp(1.25rem, 4vw, 2.5rem) 3rem;
+  }
+  .intake__intro {
+    color: var(--ink-soft);
+    max-width: 52ch;
+  }
+
+  .notice {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1.5px dashed var(--ink);
+    font-size: 1rem;
+  }
+  .notice__title {
+    font-weight: 750;
+    margin-bottom: 0.25rem;
+  }
+
+  /* ── Form ─────────────────────────────────────────────────────────── */
+  .form {
+    margin-top: 1.5rem;
+  }
+  .group {
+    border: 0;
+    padding: 0;
+    margin: 0 0 2.25rem;
+    min-width: 0;
+  }
+  .group__legend {
+    display: block;
+    width: 100%;
+    padding: 0 0 0.6rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--rule-strong);
+    font-size: 1.125rem;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+  }
+  .field + .field {
+    margin-top: 1.25rem;
+  }
+  .field__label {
+    display: block;
+    font-weight: 650;
+    margin-bottom: 0.4rem;
+  }
+  .field__opt {
+    font-weight: 450;
+    color: var(--ink-soft);
+    font-size: var(--fs-s);
+  }
+  .field__hint {
+    margin: -0.2rem 0 0.55rem;
+    color: var(--ink-soft);
+    font-size: var(--fs-s);
+    line-height: 1.45;
+  }
+  .field__input {
+    display: block;
+    width: 100%;
+    min-height: 3.1rem;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid var(--ink);
+    border-radius: 6px;
+    background: #fffdf8;
+    font-size: 1.0625rem; /* ≥16px avoids iOS zoom */
+    line-height: 1.4;
+    transition:
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease);
+  }
+  .field__input::placeholder {
+    color: #857d6f;
+  }
+  textarea.field__input {
+    resize: vertical;
+  }
+  .field__input:hover {
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  .field__input:focus-visible {
+    outline: none;
+    border-color: var(--ink);
+    box-shadow: 0 0 0 3px var(--accent);
+  }
+  .field__input--date {
+    max-width: 16rem;
+  }
+  .field__input[aria-invalid='true'] {
+    border-color: var(--error);
+    box-shadow: 0 0 0 1px var(--error);
+  }
+  .field__error {
+    color: var(--error);
+    font-weight: 600;
+    font-size: var(--fs-s);
+    margin-top: 0.4rem;
+  }
+  .field__error:empty {
+    display: none;
+  }
+  .field__error::before {
+    content: '! ';
+    font-weight: 800;
+  }
+
+  /* Package options */
+  .pkgs {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .pkgopt {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1rem;
+    border: 1.5px solid var(--rule);
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+      border-color var(--fast) var(--ease),
+      background-color var(--fast) var(--ease);
+  }
+  .pkgopt:hover {
+    border-color: var(--ink);
+  }
+  .pkgopt:has(:checked) {
+    border-color: var(--ink);
+    background: #fffdf8;
+    box-shadow: inset 6px 0 0 var(--accent);
+  }
+  .pkgopt:has(:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .pkgopt input,
+  .choice input {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    width: 1.35rem;
+    height: 1.35rem;
+    margin: 0;
+    border: 1.5px solid var(--ink);
+    background: #fffdf8;
+    display: grid;
+    place-content: center;
+  }
+  .pkgopt input,
+  .choice input[type='radio'] {
+    border-radius: 50%;
+  }
+  .choice input[type='checkbox'] {
+    border-radius: 4px;
+  }
+  .pkgopt input:checked,
+  .choice input:checked {
+    background: var(--ink);
+  }
+  .pkgopt input:checked::after,
+  .choice input[type='radio']:checked::after {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--bg);
+  }
+  .choice input[type='checkbox']:checked::after {
+    content: '';
+    width: 0.4rem;
+    height: 0.7rem;
+    border: solid var(--bg);
+    border-width: 0 2px 2px 0;
+    transform: translateY(-1px) rotate(45deg);
+  }
+  .pkgopt input:focus-visible,
+  .choice input:focus-visible {
+    outline: none;
+  }
+  .pkgopt__main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .pkgopt__name {
+    font-weight: 800;
+    font-stretch: 115%;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+  }
+  .pkgopt__tag {
+    color: var(--ink-soft);
+    font-size: var(--fs-s);
+  }
+  .pkgopt__price {
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .group[aria-invalid='true'] .pkgopt,
+  .group[aria-invalid='true'] .choice,
+  .field[aria-invalid='true'] .choice {
+    border-color: var(--error);
+  }
+
+  /* Checkbox / radio chips */
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 2.9rem;
+    padding: 0.55rem 1rem 0.55rem 0.8rem;
+    border: 1.5px solid var(--rule);
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1.25;
+    transition:
+      border-color var(--fast) var(--ease),
+      background-color var(--fast) var(--ease);
+  }
+  .choice:hover {
+    border-color: var(--ink);
+  }
+  .choice:has(:checked) {
+    border-color: var(--ink);
+    background: #fffdf8;
+  }
+  .choice:has(:focus-visible) {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .group--world {
+    padding: 1.25rem;
+    background: var(--bg-sunk);
+    border-radius: 8px;
+  }
+  .group--world .group__legend {
+    float: left;
+    padding-top: 0;
+  }
+  .group--world .group__legend + * {
+    clear: both;
+  }
+
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .errors {
+    margin-bottom: 2rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--error);
+    border-radius: 8px;
+    background: #fff6f4;
+  }
+  .errors:focus {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .errors__title {
+    font-weight: 750;
+    color: var(--error);
+  }
+  .errors ul {
+    margin-top: 0.4rem;
+    padding-left: 1.2rem;
+  }
+  .errors a {
+    color: var(--error);
+    font-weight: 600;
+    text-underline-offset: 0.15em;
+  }
+
+  .form__footer {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule-strong);
+  }
+  .form__note {
+    font-size: var(--fs-s);
+    color: var(--ink-soft);
+    margin-bottom: 1rem;
+  }
+  .form__submit[aria-busy='true'] {
+    opacity: 0.75;
+    cursor: progress;
+  }
+  .form__status {
+    margin-top: 0.9rem;
+    font-weight: 600;
+  }
+  .form__status:empty {
+    display: none;
+  }
+  .form__status[data-tone='error'] {
+    color: var(--error);
+  }
+
+  /* ── Results ──────────────────────────────────────────────────────── */
+  .result {
+    padding-top: 1rem;
+  }
+  .result__mark {
+    display: grid;
+    place-content: center;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: var(--accent);
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+  .result__title {
+    font-size: var(--fs-l);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .result__title:focus {
+    outline: none;
+  }
+  .result__body {
+    margin: 1rem 0 1.75rem;
+    color: var(--ink-soft);
+    max-width: 48ch;
+  }
+  .result__summary {
+    font-size: 0.9375rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .result__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 640px) {
+    .intake {
+      --panel-w: 100%;
+    }
+    .pkgopt {
+      grid-template-columns: auto 1fr;
+    }
+    .pkgopt__price {
+      grid-column: 2;
+      margin-top: -0.4rem;
+      font-size: 1.0625rem;
+    }
+    .choices--row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>
+
+<script>
+  import '../scripts/intake';
+</script>

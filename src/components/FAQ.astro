@@ -1,0 +1,126 @@
+---
+import { faq } from '../config/site';
+---
+
+<section id="faq" class="section faq" aria-labelledby="faq-title">
+  <div class="wrap faq__grid">
+    <div class="faq__side">
+      <h2 id="faq-title" class="h1" data-reveal>{faq.headline}</h2>
+    </div>
+
+    <div class="faq__list">
+      {
+        faq.items.map((item) => (
+          <details class="qa">
+            <summary class="qa__q">
+              <span>{item.q}</span>
+              <span class="qa__icon" aria-hidden="true" />
+            </summary>
+            <div class="qa__a">
+              <p>{item.a}</p>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    border-top: 1px solid var(--rule);
+  }
+  .faq__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+  }
+  .faq__side {
+    grid-column: 1 / span 4;
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+  }
+  .faq__list {
+    grid-column: 5 / -1;
+    border-top: 1px solid var(--rule-strong);
+  }
+
+  .qa {
+    border-bottom: 1px solid var(--rule);
+  }
+  .qa__q {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.35rem 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: var(--fs-m);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    transition: color var(--fast) var(--ease);
+  }
+  .qa__q::-webkit-details-marker {
+    display: none;
+  }
+  .qa__q:hover {
+    color: var(--ink-soft);
+  }
+  .qa__icon {
+    position: relative;
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    transition:
+      background-color var(--fast) var(--ease),
+      border-color var(--fast) var(--ease),
+      transform 300ms var(--ease);
+  }
+  .qa__icon::before,
+  .qa__icon::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0.8rem;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+  }
+  .qa__icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    transition: transform 300ms var(--ease);
+  }
+  .qa__q:hover .qa__icon {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .qa[open] .qa__icon::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  .qa__a {
+    padding: 0 3.75rem 1.75rem 0;
+    max-width: 64ch;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 900px) {
+    .faq__side,
+    .faq__list {
+      grid-column: 1 / -1;
+      position: static;
+    }
+    .faq__list {
+      margin-top: 1.5rem;
+    }
+    .qa__a {
+      padding-right: 0;
+    }
+  }
+</style>

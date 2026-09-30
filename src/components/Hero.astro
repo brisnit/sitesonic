@@ -1,0 +1,100 @@
+---
+import Media from './Media.astro';
+import { hero } from '../config/site';
+---
+
+<section class="hero" aria-labelledby="hero-title" id="top">
+  <div class="wrap hero__grid">
+    <div class="hero__text">
+      <h1 id="hero-title" class="display hero__title">
+        <span class="hero__line">{hero.headline[0]}</span>
+        <span class="hero__line hero__line--2">{hero.headline[1]}</span>
+      </h1>
+
+      <div class="hero__copy">
+        <p class="lead">{hero.body}</p>
+        <div class="hero__actions">
+          <a class="btn" href={hero.primary.href}>
+            {hero.primary.label} <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a class="btn btn--ghost" href={hero.secondary.href}>{hero.secondary.label}</a>
+        </div>
+      </div>
+    </div>
+
+    <Media slot="hero" class="hero__media" eager sizes="(min-width: 1000px) 42vw, 100vw" />
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: clamp(1.5rem, 4vw, 3.5rem);
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: var(--gutter);
+    align-items: stretch;
+  }
+  .hero__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(2.5rem, 5vw, 4rem);
+  }
+  .hero__title {
+    display: flex;
+    flex-direction: column;
+    font-size: clamp(2.75rem, 6.5vw, 6.75rem);
+    padding-top: 0.1em;
+  }
+  .hero__line--2::before {
+    content: '';
+    display: inline-block;
+    width: 0.46em;
+    height: 0.46em;
+    margin-right: 0.16em;
+    border-radius: 50%;
+    background: var(--accent);
+    vertical-align: 0.08em;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__line--2::before {
+      animation: pulse 2.4s var(--ease) 3;
+    }
+  }
+  @keyframes pulse {
+    50% {
+      transform: scale(0.82);
+    }
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .hero :global(.hero__media) {
+    align-self: start;
+  }
+
+  @media (max-width: 999px) {
+    .hero__grid {
+      grid-template-columns: 1fr;
+    }
+    .hero :global(.hero__media) {
+      margin-top: 1rem;
+      aspect-ratio: 3 / 2;
+    }
+  }
+  @media (max-width: 599px) {
+    .hero :global(.hero__media) {
+      aspect-ratio: 4 / 5;
+      margin-inline: calc(var(--gutter) * -1);
+    }
+    .hero__actions .btn {
+      flex: 1 1 100%;
+    }
+  }
+</style>

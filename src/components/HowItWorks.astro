@@ -1,0 +1,118 @@
+---
+import { howItWorks } from '../config/site';
+---
+
+<section id="how-it-works" class="section how" aria-labelledby="how-title">
+  <div class="wrap">
+    <h2 id="how-title" class="h1" data-reveal>{howItWorks.headline}</h2>
+
+    <ol role="list" class="steps">
+      {
+        howItWorks.steps.map((s, i) => (
+          <li class="step" data-reveal style={`--i: ${i}`}>
+            <span class="step__n" aria-hidden="true">
+              {i + 1}
+            </span>
+            <h3 class="step__title">
+              <span class="visually-hidden">Step {i + 1}: </span>
+              {s.title}
+            </h3>
+            <p class="step__body">{s.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="how__note">{howItWorks.note}</p>
+  </div>
+</section>
+
+<style>
+  .how {
+    border-top: 1px solid var(--rule);
+  }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-top: clamp(3rem, 6vw, 5rem);
+    border-top: 1px solid var(--rule-strong);
+  }
+  .step {
+    padding: 1.5rem clamp(1rem, 2vw, 2rem) 0 0;
+  }
+  .step + .step {
+    border-left: 1px solid var(--rule);
+    padding-left: clamp(1rem, 2vw, 2rem);
+  }
+  .step__n {
+    display: block;
+    font-size: clamp(4.5rem, 9vw, 8.5rem);
+    font-weight: 800;
+    font-stretch: 80%;
+    letter-spacing: -0.05em;
+    line-height: 0.8;
+    transition: color var(--fast) var(--ease);
+  }
+  .step:hover .step__n {
+    color: var(--accent);
+  }
+  .step__title {
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: var(--fs-m);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .step__body {
+    margin-top: 0.75rem;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    max-width: 34ch;
+  }
+  .how__note {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding: 1.25rem 1.5rem;
+    border-left: 4px solid var(--accent);
+    background: var(--bg-sunk);
+    max-width: 60ch;
+    font-weight: 550;
+  }
+
+  @media (max-width: 1000px) {
+    .steps {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 2.5rem;
+    }
+    .step + .step:nth-child(3) {
+      border-left: 0;
+      padding-left: 0;
+    }
+  }
+  @media (max-width: 600px) {
+    .steps {
+      grid-template-columns: 1fr;
+      row-gap: 0;
+      border-top: 0;
+    }
+    .step,
+    .step + .step {
+      display: grid;
+      grid-template-columns: 4.5rem 1fr;
+      column-gap: 1rem;
+      border-left: 0;
+      padding: 1.5rem 0;
+      border-top: 1px solid var(--rule);
+    }
+    .step:first-child {
+      border-top-color: var(--rule-strong);
+    }
+    .step__n {
+      grid-row: span 2;
+      font-size: 4.5rem;
+    }
+    .step__title {
+      margin-top: 0;
+    }
+  }
+</style>

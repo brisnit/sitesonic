@@ -1,0 +1,122 @@
+---
+import Media from './Media.astro';
+import { worldFeature } from '../config/site';
+---
+
+<section class="world on-dark" aria-labelledby="world-title">
+  <div class="wrap world__grid">
+    <Media slot="world" tone="dark" class="world__media" sizes="(min-width: 900px) 45vw, 100vw" />
+
+    <div class="world__content">
+      <p class="eyebrow world__eyebrow" data-reveal>{worldFeature.eyebrow}</p>
+      <h2 id="world-title" class="h1 world__title" data-reveal style="--i: 1">{worldFeature.headline}</h2>
+
+      <div class="prose world__body" data-reveal style="--i: 2">
+        {worldFeature.body.map((p) => <p>{p}</p>)}
+      </div>
+
+      <ol role="list" class="threads" aria-label="What World connects">
+        {
+          worldFeature.threads.map((t, i) => (
+            <li class="threads__item">
+              <span class="threads__n" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <span>{t}</span>
+            </li>
+          ))
+        }
+      </ol>
+
+      <button type="button" class="btn btn--accent world__cta" data-open-intake="world">
+        {worldFeature.cta} <span class="arrow" aria-hidden="true">→</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .world {
+    background: var(--ink);
+    color: var(--bg);
+    padding-block: var(--section);
+    --rule: rgb(245 241 232 / 0.2);
+  }
+  .world__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+  }
+  .world :global(.world__media) {
+    grid-column: 1 / span 5;
+    position: sticky;
+    top: calc(var(--header-h) + 1.5rem);
+  }
+  .world__content {
+    grid-column: 7 / -1;
+  }
+  .world__eyebrow {
+    color: var(--accent);
+  }
+  .world__title {
+    margin-top: 1.25rem;
+  }
+  .world__body {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    color: rgb(245 241 232 / 0.82);
+  }
+
+  .threads {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    border-top: 1px solid var(--rule);
+  }
+  .threads__item {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: var(--fs-l);
+    font-weight: 750;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    transition:
+      color var(--fast) var(--ease),
+      padding-left 400ms var(--ease);
+  }
+  .threads__item:hover {
+    color: var(--accent);
+    padding-left: 0.5rem;
+  }
+  .threads__n {
+    font-size: var(--fs-s);
+    font-weight: 600;
+    font-stretch: 120%;
+    letter-spacing: 0;
+    color: rgb(245 241 232 / 0.6);
+    min-width: 1.75rem;
+  }
+  .world__cta {
+    margin-top: clamp(2.5rem, 4vw, 3.5rem);
+  }
+
+  @media (max-width: 900px) {
+    .world__grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+    .world :global(.world__media) {
+      position: relative;
+      top: 0;
+      width: 100%;
+    }
+  }
+  @media (max-width: 520px) {
+    .world__cta {
+      width: 100%;
+      white-space: normal;
+    }
+  }
+</style>

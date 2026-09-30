@@ -1,0 +1,99 @@
+---
+import PackageCard from './PackageCard.astro';
+import { packages, packagesSection } from '../config/site';
+---
+
+<section id="packages" class="section packages" aria-labelledby="packages-title">
+  <div class="wrap">
+    <div class="packages__intro">
+      <h2 id="packages-title" class="h1" data-reveal>{packagesSection.headline}</h2>
+      <p class="lead muted" data-reveal style="--i: 1">{packagesSection.body}</p>
+    </div>
+
+    <div class="packages__grid">
+      {packages.map((pkg, i) => <PackageCard pkg={pkg} index={i} />)}
+    </div>
+
+    <div class="notes">
+      {
+        packagesSection.notes.map((n) => (
+          <div class="notes__item">
+            <h3 class="notes__title">{n.title}</h3>
+            <p class="notes__body">{n.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .packages {
+    border-top: 1px solid var(--rule);
+  }
+  .packages__intro {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--gutter);
+    align-items: end;
+    margin-bottom: clamp(3rem, 6vw, 5.5rem);
+  }
+  .packages__intro .h1 {
+    grid-column: 1 / span 7;
+  }
+  .packages__intro .lead {
+    grid-column: 9 / -1;
+  }
+
+  .packages__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .packages__grid > :global(.pkg + .pkg) {
+    border-left: 1px solid var(--rule);
+  }
+
+  .notes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
+    margin-top: clamp(3rem, 5vw, 4.5rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule-strong);
+  }
+  .notes__title {
+    font-size: var(--fs-body);
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+  .notes__body {
+    color: var(--ink-soft);
+    font-size: 1rem;
+    max-width: 44ch;
+  }
+
+  @media (max-width: 1100px) {
+    .packages__intro .h1,
+    .packages__intro .lead {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 900px) {
+    .packages__grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .packages__grid > :global(.pkg) {
+      grid-row: auto;
+      grid-template-rows: none;
+      padding-inline: 0;
+    }
+    .packages__grid > :global(.pkg + .pkg) {
+      border-left: 0;
+    }
+    .notes {
+      grid-template-columns: 1fr;
+      gap: 1.75rem;
+    }
+  }
+</style>

@@ -1,0 +1,111 @@
+---
+/**
+ * An image slot. Renders the optimized image when the slot in
+ * `src/config/images.ts` has a `src`; otherwise a labelled placeholder
+ * at the slot's aspect ratio.
+ */
+import { Picture } from 'astro:assets';
+import { images, type ImageKey } from '../config/images';
+
+interface Props {
+  slot: ImageKey;
+  /** Responsive `sizes` hint for the real image. */
+  sizes?: string;
+  tone?: 'light' | 'dark';
+  eager?: boolean;
+  class?: string;
+}
+
+const { slot, sizes = '100vw', tone = 'light', eager = false, class: className } = Astro.props;
+const data = images[slot];
+const ratioLabel = data.ratio.replace(/\s/g, '').replace('/', ':');
+---
+
+<figure class:list={['media', `media--${tone}`, className]} style={`--ratio: ${data.ratio}`}>
+  {
+    data.src ? (
+      <Picture
+        src={data.src}
+        alt={data.alt ?? ''}
+        formats={['avif', 'webp']}
+        widths={[480, 800, 1200, 1600, 2400].filter((w) => w <= data.src!.width)}
+        sizes={sizes}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
+      />
+    ) : (
+      <div class="media__placeholder" role="img" aria-label={`Image placeholder: ${data.label}`}>
+        <span class="media__label">{data.label}</span>
+        <span class="media__brief">{data.brief}</span>
+        <span class="media__ratio" aria-hidden="true">
+          {ratioLabel}
+        </span>
+      </div>
+    )
+  }
+</figure>
+
+<style>
+  .media {
+    position: relative;
+    aspect-ratio: var(--ratio);
+    overflow: hidden;
+    background: var(--bg-sunk);
+  }
+  .media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease);
+  }
+  .media__placeholder {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.35rem;
+    padding: clamp(1rem, 2vw, 1.5rem);
+    background:
+      linear-gradient(to top right, transparent calc(50% - 0.5px), var(--rule) 50%, transparent calc(50% + 0.5px)),
+      var(--bg-sunk);
+    color: var(--ink);
+    transition: background-color var(--fast) var(--ease);
+  }
+  .media__label {
+    font-weight: 700;
+    font-size: var(--fs-body);
+    line-height: 1.2;
+    background: var(--bg-sunk);
+    justify-self: start;
+    padding-right: 0.5rem;
+  }
+  .media__brief {
+    font-size: var(--fs-s);
+    color: var(--ink-soft);
+    max-width: 28ch;
+    line-height: 1.35;
+    background: var(--bg-sunk);
+    justify-self: start;
+    align-self: start;
+    padding-right: 0.5rem;
+  }
+  .media__ratio {
+    justify-self: end;
+    font-weight: 700;
+    font-stretch: 120%;
+    font-size: var(--fs-s);
+    background: var(--bg-sunk);
+    padding-left: 0.5rem;
+  }
+
+  .media--dark {
+    --bg-sunk: #2a2720;
+    --rule: rgb(245 241 232 / 0.22);
+  }
+  .media--dark .media__placeholder {
+    color: var(--bg);
+  }
+  .media--dark .media__brief {
+    color: rgb(245 241 232 / 0.72);
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+import { finalCta } from '../config/site';
+---
+
+<section class="final on-accent" aria-labelledby="final-title">
+  <div class="wrap final__inner">
+    <h2 id="final-title" class="display final__title" data-reveal>{finalCta.headline}</h2>
+    <div class="final__row" data-reveal style="--i: 1">
+      <p class="lead">{finalCta.body}</p>
+      <a class="btn final__btn" href={finalCta.cta.href}>
+        {finalCta.cta.label} <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    background: var(--accent);
+    color: var(--on-accent);
+    padding-block: clamp(5rem, 12vw, 10rem);
+    --rule: rgb(22 20 15 / 0.3);
+  }
+  .final__title {
+    max-width: 11ch;
+  }
+  .final__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: clamp(2.5rem, 5vw, 4.5rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--ink);
+  }
+  .final__row .lead {
+    font-weight: 600;
+  }
+  .final__btn:hover {
+    --btn-bg: var(--bg);
+    --btn-fg: var(--ink);
+    border-color: var(--bg);
+  }
+  @media (max-width: 520px) {
+    .final__btn {
+      width: 100%;
+    }
+  }
+</style>

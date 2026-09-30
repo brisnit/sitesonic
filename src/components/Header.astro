@@ -1,0 +1,246 @@
+---
+import Wordmark from './Wordmark.astro';
+import { nav, primaryCta } from '../config/site';
+---
+
+<header class="header" data-header>
+  <div class="wrap header__inner">
+    <Wordmark />
+
+    <nav class="header__nav" aria-label="Main">
+      <button
+        class="header__toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="site-menu"
+        data-menu-toggle
+      >
+        <span class="header__toggle-label">Menu</span>
+        <span class="header__toggle-icon" aria-hidden="true"></span>
+      </button>
+
+      <div class="header__menu" id="site-menu" data-menu>
+        <ul role="list" class="header__links">
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href} class="header__link" data-nav-link>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a href={primaryCta.href} class="btn btn--accent header__cta">{primaryCta.label}</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgb(245 241 232 / 0.92);
+    backdrop-filter: saturate(1.2) blur(10px);
+    -webkit-backdrop-filter: saturate(1.2) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--fast) var(--ease);
+  }
+  .header.is-scrolled {
+    border-bottom-color: var(--rule);
+  }
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: var(--header-h);
+  }
+  .header__menu {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  }
+  .header__links {
+    display: flex;
+    gap: clamp(1rem, 2.2vw, 2.25rem);
+  }
+  .header__link {
+    position: relative;
+    font-weight: 550;
+    text-decoration: none;
+    padding-block: 0.5rem;
+  }
+  .header__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.2rem;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--fast) var(--ease);
+  }
+  .header__link:hover::after,
+  .header__link[aria-current='true']::after {
+    transform: scaleX(1);
+  }
+  .header__cta {
+    min-height: 2.75rem;
+    padding-block: 0.6em;
+    font-size: 1rem;
+  }
+  .header__toggle {
+    display: none;
+  }
+
+  /* Small screens: collapsible menu */
+  @media (max-width: 860px) {
+    .header__toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-height: 2.75rem;
+      padding: 0 0.25rem 0 1rem;
+      background: none;
+      border: 0;
+      font-weight: 650;
+    }
+    .header__toggle-icon {
+      position: relative;
+      width: 1.5rem;
+      height: 2px;
+      background: currentColor;
+      transition: background-color var(--fast) var(--ease);
+    }
+    .header__toggle-icon::before,
+    .header__toggle-icon::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: currentColor;
+      transition: transform var(--fast) var(--ease);
+    }
+    .header__toggle-icon::before {
+      transform: translateY(-7px);
+    }
+    .header__toggle-icon::after {
+      transform: translateY(7px);
+    }
+    [aria-expanded='true'] .header__toggle-icon {
+      background: transparent;
+    }
+    [aria-expanded='true'] .header__toggle-icon::before {
+      transform: rotate(45deg);
+    }
+    [aria-expanded='true'] .header__toggle-icon::after {
+      transform: rotate(-45deg);
+    }
+
+    .header__menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.5rem;
+      padding: 0.5rem var(--gutter) 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--rule);
+      height: calc(100dvh - var(--header-h));
+      overflow-y: auto;
+    }
+    :global(.js) .header__menu:not(.is-open) {
+      display: none;
+    }
+    .header__links {
+      flex-direction: column;
+      gap: 0;
+    }
+    .header__links li {
+      border-bottom: 1px solid var(--rule);
+    }
+    .header__link {
+      display: block;
+      padding-block: 1rem;
+      font-size: var(--fs-l);
+      font-weight: 750;
+      letter-spacing: -0.03em;
+    }
+    .header__link::after {
+      bottom: 0.75rem;
+    }
+    .header__cta {
+      min-height: 3.25rem;
+      font-size: 1.0625rem;
+    }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]')!;
+  const toggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+  const menu = header.querySelector<HTMLElement>('[data-menu]')!;
+  const links = Array.from(header.querySelectorAll<HTMLAnchorElement>('[data-nav-link]'));
+  const mobile = window.matchMedia('(max-width: 860px)');
+
+  function setOpen(open: boolean) {
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.classList.toggle('is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  menu.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
+  mobile.addEventListener('change', () => setOpen(false));
+
+  // Rule under the header once the page scrolls.
+  const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mark the nav link for the section in view (none between tracked sections).
+  const sections = links
+    .map((a) => document.querySelector<HTMLElement>(a.getAttribute('href')!))
+    .filter((s): s is HTMLElement => !!s);
+  let ticking = false;
+  function updateCurrent() {
+    ticking = false;
+    const mid = window.innerHeight * 0.45;
+    const current = sections.find((s) => {
+      const r = s.getBoundingClientRect();
+      return r.top <= mid && r.bottom > mid;
+    });
+    links.forEach((a) =>
+      current && a.getAttribute('href') === `#${current.id}`
+        ? a.setAttribute('aria-current', 'true')
+        : a.removeAttribute('aria-current'),
+    );
+  }
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateCurrent);
+      }
+    },
+    { passive: true },
+  );
+  updateCurrent();
+</script>

@@ -1,0 +1,145 @@
+---
+import Wordmark from './Wordmark.astro';
+import { brand, contact, nav, socials } from '../config/site';
+---
+
+<footer class="footer on-dark">
+  <div class="wrap">
+    <div class="footer__grid">
+      <p class="footer__tagline">{brand.tagline}</p>
+
+      <nav aria-label="Footer" class="footer__col">
+        <h2 class="footer__heading">Explore</h2>
+        <ul role="list">
+          {
+            nav.map((item) => (
+              <li>
+                <a class="link" href={item.href}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="footer__col">
+        <h2 class="footer__heading">Contact</h2>
+        {
+          contact.email ? (
+            <a class="link" href={`mailto:${contact.email}`}>
+              {contact.email}
+            </a>
+          ) : (
+            <p class="footer__placeholder">{contact.placeholder}</p>
+          )
+        }
+      </div>
+
+      <div class="footer__col">
+        <h2 class="footer__heading">Follow</h2>
+        <ul role="list">
+          {
+            socials.map((s) =>
+              s.href ? (
+                <li>
+                  <a class="link" href={s.href} rel="me noopener" target="_blank">
+                    {s.label}
+                    <span class="visually-hidden"> (opens in a new tab)</span>
+                  </a>
+                </li>
+              ) : (
+                <li class="footer__placeholder">
+                  {s.label} <span class="footer__soon">(link coming soon)</span>
+                </li>
+              ),
+            )
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__mark">
+      <Wordmark size="huge" as="span" />
+    </div>
+
+    <div class="footer__base">
+      <p>© {new Date().getFullYear()} {brand.name}</p>
+      <a class="link" href="#top">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink);
+    color: var(--bg);
+    padding-top: clamp(4rem, 8vw, 7rem);
+    --rule: rgb(245 241 232 / 0.2);
+    --ink-soft: rgb(245 241 232 / 0.7);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 2.5rem var(--gutter);
+  }
+  .footer__tagline {
+    font-size: var(--fs-m);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    max-width: 18ch;
+  }
+  .footer__heading {
+    font-size: var(--fs-body);
+    font-weight: 700;
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .footer__col li + li {
+    margin-top: 0.4rem;
+  }
+  .footer__col .link {
+    text-decoration-color: var(--rule);
+  }
+  .footer__col .link:hover {
+    text-decoration-color: var(--accent);
+  }
+  .footer__placeholder {
+    color: var(--ink-soft);
+  }
+  .footer__soon {
+    font-size: var(--fs-s);
+  }
+  .footer__mark {
+    margin-top: clamp(4rem, 9vw, 8rem);
+    container-type: inline-size;
+    overflow: hidden;
+  }
+  .footer__base {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-block: 1.5rem 2rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-soft);
+    font-size: 1rem;
+  }
+
+  @media (max-width: 900px) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer__tagline {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 480px) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

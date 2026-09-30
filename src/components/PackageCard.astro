@@ -1,0 +1,157 @@
+---
+import { formatPrice, type Package } from '../config/site';
+
+interface Props {
+  pkg: Package;
+  index: number;
+}
+const { pkg, index } = Astro.props;
+const titleId = `pkg-${pkg.id}-title`;
+---
+
+<article class:list={['pkg', { 'pkg--featured': pkg.featured }]} aria-labelledby={titleId} data-reveal style={`--i: ${index}`}>
+  <header class="pkg__head">
+    <h3 id={titleId} class="pkg__name">{pkg.name}</h3>
+    {pkg.featured && <span class="pkg__flag">Complete identity</span>}
+  </header>
+
+  <p class="pkg__price">
+    <span class="pkg__amount">{formatPrice(pkg.price)}</span>
+    <span class="pkg__terms">one-time project fee</span>
+  </p>
+
+  <div class="pkg__pitch">
+    <p class="pkg__tagline">{pkg.tagline}</p>
+    <p class="pkg__audience">{pkg.audience}</p>
+  </div>
+
+  <div class="pkg__action">
+    <button type="button" class:list={['btn', 'btn--block', pkg.featured ? 'btn--accent' : '']} data-open-intake={pkg.id}>
+      {pkg.cta} <span class="arrow" aria-hidden="true">→</span>
+    </button>
+  </div>
+
+  <div class="pkg__includes">
+    <h4 class="pkg__includes-title">What’s included</h4>
+    <ul role="list" class="pkg__list">
+      {pkg.includes.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+</article>
+
+<style>
+  .pkg {
+    display: grid;
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: 0;
+    padding: clamp(1.5rem, 2.4vw, 2.25rem) clamp(1.25rem, 2.2vw, 2.25rem) 2.5rem;
+    border-top: 1px solid var(--rule-strong);
+    position: relative;
+    transition: background-color var(--fast) var(--ease);
+  }
+  .pkg::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    height: 6px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 400ms var(--ease);
+  }
+  .pkg:hover::before,
+  .pkg:focus-within::before,
+  .pkg--featured::before {
+    transform: scaleX(1);
+  }
+
+  .pkg__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+  }
+  .pkg__name {
+    font-size: var(--fs-l);
+    font-weight: 850;
+    font-stretch: 118%;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .pkg__flag {
+    font-weight: 650;
+    font-size: var(--fs-s);
+    padding: 0.3em 0.75em;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .pkg__price {
+    display: flex;
+    flex-direction: column;
+    padding-top: clamp(1.75rem, 3vw, 2.75rem);
+  }
+  .pkg__amount {
+    font-size: clamp(3.5rem, 6.6vw, 6.5rem);
+    font-weight: 800;
+    letter-spacing: -0.055em;
+    line-height: 0.85;
+    font-variant-numeric: tabular-nums;
+  }
+  .pkg__terms {
+    margin-top: 0.75rem;
+    font-size: var(--fs-s);
+    color: var(--ink-soft);
+  }
+
+  .pkg__pitch {
+    padding-top: 1.75rem;
+  }
+  .pkg__tagline {
+    font-size: var(--fs-m);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .pkg__audience {
+    margin-top: 0.6rem;
+    color: var(--ink-soft);
+    max-width: 36ch;
+  }
+
+  .pkg__action {
+    padding-top: 1.75rem;
+  }
+
+  .pkg__includes {
+    padding-top: 2.25rem;
+  }
+  .pkg__includes-title {
+    font-size: var(--fs-body);
+    font-weight: 700;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .pkg__list li {
+    position: relative;
+    padding: 0.6rem 0 0.6rem 1.6rem;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+  .pkg__list li::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: 1.05rem;
+    width: 0.7rem;
+    height: 2px;
+    background: var(--accent);
+  }
+</style>

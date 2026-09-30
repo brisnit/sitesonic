@@ -1,0 +1,80 @@
+---
+import Media from './Media.astro';
+import { studio } from '../config/site';
+---
+
+<section id="studio" class="section studio" aria-labelledby="studio-title">
+  <div class="wrap">
+    <div class="studio__head">
+      <p class="eyebrow" data-reveal>The studio</p>
+      <h2 id="studio-title" class="h1" data-reveal style="--i: 1">{studio.headline}</h2>
+      <p class="lead muted studio__body" data-reveal style="--i: 2">{studio.body}</p>
+    </div>
+
+    <ul role="list" class="team">
+      {
+        studio.team.map((m, i) => (
+          <li class="member" data-reveal style={`--i: ${i}`}>
+            <Media slot={m.image} sizes="(min-width: 1000px) 25vw, (min-width: 600px) 50vw, 100vw" />
+            <p class="member__role">{m.role}</p>
+            <h3 class="member__name">{m.name}</h3>
+            <p class="member__bio">{m.bio}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .studio {
+    border-top: 1px solid var(--rule);
+  }
+  .studio__head {
+    max-width: 62rem;
+  }
+  .studio__head .h1 {
+    margin-top: 1.25rem;
+  }
+  .studio__body {
+    margin-top: 2rem;
+    max-width: 44ch;
+  }
+
+  .team {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(2rem, 3vw, 3rem) var(--gutter);
+    margin-top: clamp(3.5rem, 7vw, 6rem);
+  }
+  .member__role {
+    margin-top: 1.1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--rule-strong);
+    font-weight: 650;
+    font-stretch: 115%;
+  }
+  .member__name {
+    margin-top: 0.35rem;
+    font-size: var(--fs-m);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .member__bio {
+    margin-top: 0.5rem;
+    color: var(--ink-soft);
+    font-size: 1rem;
+  }
+
+  @media (max-width: 1000px) {
+    .team {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 340px) {
+    .team {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
