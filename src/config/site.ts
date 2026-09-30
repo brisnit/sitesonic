@@ -299,7 +299,7 @@ export const intake = {
    * plain JSON POST. With neither, the form says it isn't connected.
    * Success is only ever shown when delivery is confirmed.
    */
-  web3formsKey: '',
+  web3formsKey: '6e9e9c88-7a8e-40a7-bafb-11bff6c0f78f',
   endpoint: (import.meta.env.PUBLIC_INTAKE_ENDPOINT ?? '').trim(),
   /** Offered as an "email instead" link if sending fails. */
   fallbackEmail: 'britt@sitesonic.online',
