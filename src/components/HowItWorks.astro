@@ -51,10 +51,14 @@ import { howItWorks } from '../config/site';
     font-stretch: 80%;
     letter-spacing: -0.05em;
     line-height: 0.8;
-    transition: color var(--fast) var(--ease);
+    transition: text-decoration-color var(--fast) var(--ease);
+  }
+  .step__n {
+    text-decoration: underline 0.07em transparent;
+    text-underline-offset: 0.12em;
   }
   .step:hover .step__n {
-    color: var(--accent);
+    text-decoration-color: var(--accent);
   }
   .step__title {
     margin-top: clamp(1.5rem, 3vw, 2.5rem);

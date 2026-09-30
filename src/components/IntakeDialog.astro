@@ -390,7 +390,9 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
   .field__input:focus-visible {
     outline: none;
     border-color: var(--ink);
-    box-shadow: 0 0 0 3px var(--accent);
+    box-shadow:
+      0 0 0 1.5px var(--ink),
+      0 0 0 5px var(--accent);
   }
   .field__input--date {
     max-width: 16rem;
@@ -440,7 +442,7 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
     box-shadow: inset 6px 0 0 var(--accent);
   }
   .pkgopt:has(:focus-visible) {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--ink);
     outline-offset: 2px;
   }
   .pkgopt input,
@@ -543,7 +545,7 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
     background: #fffdf8;
   }
   .choice:has(:focus-visible) {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--ink);
     outline-offset: 2px;
   }
 
@@ -576,7 +578,7 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
     background: #fff6f4;
   }
   .errors:focus {
-    outline: 3px solid var(--accent);
+    outline: 3px solid var(--ink);
     outline-offset: 2px;
   }
   .errors__title {

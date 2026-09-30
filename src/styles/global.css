@@ -12,7 +12,8 @@
   --ink-soft: #4a453b;
   --rule: rgb(22 20 15 / 0.2);
   --rule-strong: #16140f;
-  --accent: #ff4a1c; /* 5.7:1 against --ink; use as a fill, or large text on dark */
+  --accent: #00d28c; /* 9.4:1 against --ink. Use as a fill behind ink text, or as text on dark.
+                        Only 1.8:1 on --bg: decoration only on light backgrounds. */
   --on-accent: #16140f;
   --error: #b3261e;
   --success: #1d6b3a;
@@ -106,7 +107,7 @@ ol[role='list'] {
 }
 
 :focus-visible {
-  outline: 3px solid var(--accent);
+  outline: 3px solid var(--ink);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -173,9 +174,6 @@ ol[role='list'] {
 }
 .muted {
   color: var(--ink-soft);
-}
-.accent-text {
-  color: var(--accent);
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */

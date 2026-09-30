@@ -15,10 +15,10 @@ const html = `<!doctype html><html><head><style>
 * { margin: 0; box-sizing: border-box; }
 body { width: 1200px; height: 630px; background: #f5f1e8; color: #16140f; font-family: A; padding: 64px 72px; display: flex; flex-direction: column; justify-content: space-between; }
 .mark { font-weight: 900; font-stretch: 125%; text-transform: uppercase; font-size: 40px; letter-spacing: -0.03em; }
-.mark span, .dot { color: #ff4a1c; }
+.mark span, .dot { color: #00d28c; }
 h1 { font-size: 92px; font-weight: 800; letter-spacing: -0.045em; line-height: 0.95; max-width: 13ch; }
 .foot { display: flex; justify-content: space-between; align-items: end; border-top: 2px solid #16140f; padding-top: 22px; font-size: 26px; font-weight: 600; }
-.pill { background: #ff4a1c; padding: 12px 24px; border-radius: 999px; }
+.pill { background: #00d28c; padding: 12px 24px; border-radius: 999px; }
 </style></head><body>
 <div class="mark">${name}<span>.</span></div>
 <h1>${tagline}</h1>
