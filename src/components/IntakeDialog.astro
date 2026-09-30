@@ -6,7 +6,9 @@
  */
 import { formatPrice, intake, packages } from '../config/site';
 
-const connected = intake.endpoint.length > 0;
+const WEB3FORMS = 'https://api.web3forms.com/submit';
+const endpoint = intake.web3formsKey ? WEB3FORMS : intake.endpoint;
+const connected = endpoint.length > 0;
 const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
 ---
 
@@ -28,16 +30,17 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
         {
           !connected && (
             <div class="notice" data-integration="intake-endpoint">
-              <p class="notice__title">Requests aren’t connected yet</p>
+              <p class="notice__title">Online requests are almost ready</p>
               <p>
-                You can fill this in, but it won’t be sent anywhere until an inquiry endpoint is configured. We’ll
-                never show a request as sent unless it actually was.
+                {intake.fallbackEmail
+                  ? 'Fill this in and we’ll turn it into an email for you to send us. We’ll never show a request as sent unless it actually was.'
+                  : 'You can fill this in, but it won’t be sent anywhere until an inquiry endpoint is configured. We’ll never show a request as sent unless it actually was.'}
               </p>
             </div>
           )
         }
 
-        <form class="form" novalidate data-intake-form data-endpoint={intake.endpoint}>
+        <form class="form" novalidate data-intake-form data-endpoint={endpoint} data-access-key={intake.web3formsKey} data-fallback-email={intake.fallbackEmail}>
           <div class="errors" data-error-summary tabindex="-1" hidden>
             <p class="errors__title">Please check a few things:</p>
             <ul data-error-list></ul>
@@ -186,6 +189,9 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
               <span class="arrow" aria-hidden="true">→</span>
             </button>
             <div class="form__status" role="status" aria-live="polite" data-status></div>
+            <p class="form__fallback" data-fallback hidden>
+              <a class="link" href="#" data-fallback-link>Email your request instead</a>. Your answers will be filled in for you.
+            </p>
           </div>
         </form>
       </div>
@@ -204,6 +210,13 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
         <label class="field__label" for="f-summary">Your request</label>
         <textarea class="field__input result__summary" id="f-summary" rows="12" readonly data-summary></textarea>
         <div class="result__actions">
+          {
+            intake.fallbackEmail && (
+              <a class="btn btn--accent" href={`mailto:${intake.fallbackEmail}`} data-unsent-mailto>
+                Email this request <span class="arrow" aria-hidden="true">→</span>
+              </a>
+            )
+          }
           <button type="button" class="btn" data-copy-summary>Copy details</button>
           <button type="button" class="btn btn--ghost" data-back-to-form>Back to form</button>
         </div>
@@ -617,6 +630,13 @@ const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
   }
   .form__status[data-tone='error'] {
     color: var(--error);
+  }
+  .form__fallback {
+    margin-top: 0.5rem;
+    font-weight: 600;
+  }
+  .form__fallback[hidden] {
+    display: none;
   }
 
   /* ── Results ──────────────────────────────────────────────────────── */

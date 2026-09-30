@@ -292,15 +292,17 @@ export const finalCta = {
 // ── Intake form ─────────────────────────────────────────────────────────────
 export const intake = {
   /**
-   * Receives requests as a JSON POST. Requests are emailed via FormSubmit
-   * (formsubmit.co), which needs a one-time activation: the first request
-   * triggers a confirmation email to this address, and nothing is delivered
-   * until the link in it is clicked. After activating, FormSubmit also
-   * offers a random alias to use in place of the address (keeps it out of
-   * the page source). Override with PUBLIC_INTAKE_ENDPOINT in `.env`, or set
-   * it to '' to disconnect. Success is only shown when delivery is confirmed.
+   * Where package requests go. Web3Forms (web3forms.com) emails each request
+   * to the inbox the access key was created for. Get a free key by entering
+   * britt@sitesonic.online at web3forms.com; it's safe to publish.
+   * With no key, `endpoint` (or PUBLIC_INTAKE_ENDPOINT) is used instead, as a
+   * plain JSON POST. With neither, the form says it isn't connected.
+   * Success is only ever shown when delivery is confirmed.
    */
-  endpoint: (import.meta.env.PUBLIC_INTAKE_ENDPOINT ?? 'https://formsubmit.co/ajax/britt@sitesonic.online').trim(),
+  web3formsKey: '',
+  endpoint: (import.meta.env.PUBLIC_INTAKE_ENDPOINT ?? '').trim(),
+  /** Offered as an "email instead" link if sending fails. */
+  fallbackEmail: 'britt@sitesonic.online',
   title: 'Request a package',
   intro:
     'Tell us about your music. We’ll review your request, confirm availability, scope, and schedule, then send checkout details. No payment is taken here.',
@@ -320,8 +322,8 @@ export const intake = {
     body: 'Thanks. We’ll review your request and reply by email to confirm availability, scope, and schedule. Checkout follows once everything is agreed.',
   },
   notConnected: {
-    title: 'This form isn’t connected yet.',
-    body: 'Your request was not sent. Package requests will open soon. Copy your details below so you don’t lose them.',
+    title: 'One more step: send it by email.',
+    body: 'Online requests aren’t switched on yet, so this hasn’t been sent. Use “Email this request” and your answers will be filled in, or copy them below.',
   },
 };
 

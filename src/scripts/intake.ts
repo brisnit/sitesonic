@@ -8,6 +8,8 @@
  *   sent and the visitor is told so plainly.
  */
 
+import { brand } from '../config/site';
+
 type PackageInfo = { id: string; name: string; price: number };
 
 const dialog = document.querySelector<HTMLDialogElement>('[data-intake]');
@@ -18,6 +20,8 @@ if (dialog && form) init(dialog, form);
 function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
   const packages: PackageInfo[] = JSON.parse(document.getElementById('intake-packages')?.textContent ?? '[]');
   const endpoint = form.dataset.endpoint?.trim() ?? '';
+  const accessKey = form.dataset.accessKey?.trim() ?? '';
+  const fallbackEmail = form.dataset.fallbackEmail?.trim() ?? '';
 
   const $ = <T extends Element>(sel: string, root: ParentNode = dialog) => root.querySelector<T>(sel)!;
   const title = $<HTMLElement>('#intake-title');
@@ -34,6 +38,8 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
   const submitBtn = $<HTMLButtonElement>('[data-submit]');
   const submitLabel = $<HTMLElement>('[data-submit-label]');
   const status = $<HTMLElement>('[data-status]');
+  const fallback = $<HTMLElement>('[data-fallback]');
+  const fallbackLink = $<HTMLAnchorElement>('[data-fallback-link]');
   const summaryText = $<HTMLTextAreaElement>('[data-summary]');
   const copyStatus = $<HTMLElement>('[data-copy-status]');
   const dateInput = form.elements.namedItem('launchDate') as HTMLInputElement;
@@ -273,6 +279,7 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
   function clearStatus() {
     status.textContent = '';
     delete status.dataset.tone;
+    fallback.hidden = true;
   }
   function setBusy(busy: boolean) {
     submitting = busy;
@@ -307,22 +314,23 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
 
   /**
    * Flat, labelled fields so the request reads cleanly as an email.
-   * Underscore fields are FormSubmit options (ignored by most other services).
+   * Web3Forms options (access_key, subject, from_name, replyto) or, for other
+   * endpoints, FormSubmit-style underscore options, which most services ignore.
    */
   function emailFields(data: ReturnType<typeof payload>) {
     const pkg = data.package ? `${data.package.name} ($${data.package.price.toLocaleString('en-US')})` : '';
-    const fields: Record<string, string> = {
-      _subject: `New ${data.package?.name ?? 'package'} request: ${data.artistName}`,
-      _replyto: data.email,
-      _template: 'table',
-      _captcha: 'false',
+    const subject = `New ${data.package?.name ?? 'package'} request: ${data.artistName}`;
+    const fields: Record<string, string> = accessKey
+      ? { access_key: accessKey, subject, from_name: `${brand.name} website`, replyto: data.email }
+      : { _subject: subject, _replyto: data.email, _template: 'table', _captcha: 'false' };
+    Object.assign(fields, {
       Package: pkg,
       'Artist or band': data.artistName,
       Name: data.contactName,
       email: data.email,
       'City and country': data.location,
       'Music and social links': data.links.join('\n') || 'None given',
-    };
+    });
     if (data.photography) {
       fields['Photo session needed'] = { yes: 'Yes', no: 'No, has photos', unsure: 'Not sure yet' }[data.photography.need] ?? data.photography.need;
       if (data.photography.location) fields['Photo session location'] = data.photography.location;
@@ -384,6 +392,11 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
 
     if (!endpoint) {
       summaryText.value = summaryFor(data);
+      const mailto = views.unsent.querySelector<HTMLAnchorElement>('[data-unsent-mailto]');
+      if (mailto && fallbackEmail) {
+        const subject = `${data.package?.name ?? 'Package'} request: ${data.artistName}`;
+        mailto.href = `mailto:${fallbackEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(summaryFor(data).slice(0, 1800))}`;
+      }
       showView('unsent');
       $<HTMLElement>('.result__title', views.unsent).focus();
       return;
@@ -409,10 +422,13 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
       showView('success');
       $<HTMLElement>('.result__title', views.success).focus();
     } catch {
-      setStatus(
-        'Your request couldn’t be sent. Please check your connection and try again. Your answers are still here.',
-        'error',
-      );
+      setStatus('Your request couldn’t be sent just now. Please try again in a moment. Your answers are still here.', 'error');
+      if (fallbackEmail) {
+        const subject = `${data.package?.name ?? 'Package'} request: ${data.artistName}`;
+        const body = summaryFor(data).slice(0, 1800);
+        fallbackLink.href = `mailto:${fallbackEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        fallback.hidden = false;
+      }
     } finally {
       setBusy(false);
     }
