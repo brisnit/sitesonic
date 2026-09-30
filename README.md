@@ -61,10 +61,12 @@ Photos in `src/assets/images/` are high-quality JPEGs (use JPEG or WebP sources 
 
 Search the code for `TODO(launch)`.
 
-1. **Activate request emails (one time).** Package requests are emailed to **britt@sitesonic.online** via [FormSubmit](https://formsubmit.co) (set in `intake.endpoint`, `src/config/site.ts`). The first request anyone sends triggers an activation email to that inbox. Nothing is delivered until you click **Activate Form** in it. Until then, visitors see "Your request couldn't be sent," never a false success.
-   - After activating, FormSubmit emails you a random alias string. Swap it in for the address in the endpoint (`https://formsubmit.co/ajax/<alias>`) to keep your email out of the page source and reduce spam.
-   - To use a different service (Formspree, Basin, your own function), set `PUBLIC_INTAKE_ENDPOINT` in `.env`. It receives a JSON POST of labeled fields.
+1. **Turn on online requests (Web3Forms).** Go to [web3forms.com](https://web3forms.com), enter **britt@sitesonic.online**, and copy the access key they email you into `intake.web3formsKey` in `src/config/site.ts`. The key is safe to publish. Requests then arrive by email with a descriptive subject, and replying goes straight to the artist.
+   - Until a key is set, the form turns each request into a pre-filled email for the artist to send to `intake.fallbackEmail`, so nothing is lost.
+   - If sending ever fails, the error message offers the same "Email your request instead" link.
+   - To use a different service, leave the key empty and set `PUBLIC_INTAKE_ENDPOINT` in `.env` (a JSON POST of labeled fields).
    - It never shows a success state unless the service confirms delivery.
+   - FormSubmit was tried first but its endpoint returned HTTP 500 for every request (2026-09-30).
 2. **Payments (Stripe Payment Links).** Each package's `paymentLink` in `src/config/site.ts` points to a Stripe Payment Link. The flow is request first, pay after: once you've confirmed an artist's scope, send them `https://<your-domain>/pay?package=launch` (or `identity` / `world`), which highlights their package. `/pay` isn't linked from the site and is marked `noindex`. To change a price, update both the Stripe product and `price` in the config.
 3. **Production URL.** Set `SITE_URL` (in `.env` or `astro.config.mjs`) for canonical and social image URLs.
 4. **Contact email and social links.** In `src/config/site.ts` (`contact`, `socials`). Empty values render as labeled placeholders.
