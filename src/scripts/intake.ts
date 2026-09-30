@@ -305,6 +305,38 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
     };
   }
 
+  /**
+   * Flat, labelled fields so the request reads cleanly as an email.
+   * Underscore fields are FormSubmit options (ignored by most other services).
+   */
+  function emailFields(data: ReturnType<typeof payload>) {
+    const pkg = data.package ? `${data.package.name} ($${data.package.price.toLocaleString('en-US')})` : '';
+    const fields: Record<string, string> = {
+      _subject: `New ${data.package?.name ?? 'package'} request: ${data.artistName}`,
+      _replyto: data.email,
+      _template: 'table',
+      _captcha: 'false',
+      Package: pkg,
+      'Artist or band': data.artistName,
+      Name: data.contactName,
+      email: data.email,
+      'City and country': data.location,
+      'Music and social links': data.links.join('\n') || 'None given',
+    };
+    if (data.photography) {
+      fields['Photo session needed'] = { yes: 'Yes', no: 'No, has photos', unsure: 'Not sure yet' }[data.photography.need] ?? data.photography.need;
+      if (data.photography.location) fields['Photo session location'] = data.photography.location;
+    }
+    Object.assign(fields, {
+      'Already has': data.materials.join(', ') || 'None yet',
+      'Wants help with': data.helpWith.join(', '),
+      'Preferred launch date': data.launchDate ?? 'Flexible',
+      'Music and goals': data.description,
+      'Sent from': data.page,
+    });
+    return fields;
+  }
+
   function summaryFor(data: ReturnType<typeof payload>) {
     const lines = [
       `Package: ${data.package ? `${data.package.name} ($${data.package.price.toLocaleString('en-US')})` : ''}`,
@@ -363,9 +395,16 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(emailFields(data)),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // Some services (FormSubmit) answer 200 with { success: "false" }, e.g.
+      // before the inbox is activated. Only a confirmed delivery is a success.
+      const body = await res.json().catch(() => null);
+      if (body && (body.success === false || body.success === 'false' || body.ok === false)) {
+        console.warn('Request not delivered:', body.message ?? body);
+        throw new Error('Not delivered');
+      }
       clearStatus();
       showView('success');
       $<HTMLElement>('.result__title', views.success).focus();

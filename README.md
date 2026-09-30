@@ -61,11 +61,10 @@ Photos in `src/assets/images/` are high-quality JPEGs (use JPEG or WebP sources 
 
 Search the code for `TODO(launch)`.
 
-1. **Inquiry endpoint (required for real requests).** Set `PUBLIC_INTAKE_ENDPOINT` in `.env` (see `.env.example`). The form POSTs JSON to it. Formspree, Basin, Getform, or your own serverless function all work. Until it is set:
-   - the form shows a "Requests aren't connected yet" notice;
-   - submitting shows "This form isn't connected yet. Your request was not sent," with a copy-able summary.
-
-   It never shows a success state unless the endpoint returns a 2xx response.
+1. **Activate request emails (one time).** Package requests are emailed to **britt@sitesonic.online** via [FormSubmit](https://formsubmit.co) (set in `intake.endpoint`, `src/config/site.ts`). The first request anyone sends triggers an activation email to that inbox. Nothing is delivered until you click **Activate Form** in it. Until then, visitors see "Your request couldn't be sent," never a false success.
+   - After activating, FormSubmit emails you a random alias string. Swap it in for the address in the endpoint (`https://formsubmit.co/ajax/<alias>`) to keep your email out of the page source and reduce spam.
+   - To use a different service (Formspree, Basin, your own function), set `PUBLIC_INTAKE_ENDPOINT` in `.env`. It receives a JSON POST of labeled fields.
+   - It never shows a success state unless the service confirms delivery.
 2. **Payments.** Not integrated, by design. The form is a request ("Request this package"), and checkout follows once availability and scope are confirmed. When you are ready, send a payment link (Stripe Payment Links, Square, etc.) in your reply, or add checkout as a later step.
 3. **Production URL.** Set `SITE_URL` (in `.env` or `astro.config.mjs`) for canonical and social image URLs.
 4. **Contact email and social links.** In `src/config/site.ts` (`contact`, `socials`). Empty values render as labeled placeholders.

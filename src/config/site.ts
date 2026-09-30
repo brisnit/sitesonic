@@ -287,11 +287,15 @@ export const finalCta = {
 // ── Intake form ─────────────────────────────────────────────────────────────
 export const intake = {
   /**
-   * Receives requests as a JSON POST. Set PUBLIC_INTAKE_ENDPOINT in `.env`.
-   * While empty, the form says plainly that it is not connected, and nothing
-   * is ever shown as sent.
+   * Receives requests as a JSON POST. Requests are emailed via FormSubmit
+   * (formsubmit.co), which needs a one-time activation: the first request
+   * triggers a confirmation email to this address, and nothing is delivered
+   * until the link in it is clicked. After activating, FormSubmit also
+   * offers a random alias to use in place of the address (keeps it out of
+   * the page source). Override with PUBLIC_INTAKE_ENDPOINT in `.env`, or set
+   * it to '' to disconnect. Success is only shown when delivery is confirmed.
    */
-  endpoint: (import.meta.env.PUBLIC_INTAKE_ENDPOINT ?? '').trim(),
+  endpoint: (import.meta.env.PUBLIC_INTAKE_ENDPOINT ?? 'https://formsubmit.co/ajax/britt@sitesonic.online').trim(),
   title: 'Request a package',
   intro:
     'Tell us about your music. We’ll review your request, confirm availability, scope, and schedule, then send checkout details. No payment is taken here.',
