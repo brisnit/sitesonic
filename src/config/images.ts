@@ -14,8 +14,14 @@
  *         hero: { ...,  src: heroPhoto, alt: 'Artist name performing live at…' },
  *
  *  Astro resizes and converts images to modern formats at build time.
+ *
+ *  A slot can hold a video instead: put the file in `public/`, set `video` to
+ *  its path, and give it a `poster` (a still from the first frame, shown while
+ *  loading and to visitors who prefer reduced motion). Videos play muted and
+ *  looped, with a pause button.
  */
 import type { ImageMetadata } from 'astro';
+import heroPoster from '../assets/images/hero-poster.jpg';
 
 export interface ImageSlot {
   /** Label shown on the placeholder. */
@@ -26,13 +32,24 @@ export interface ImageSlot {
   ratio: string;
   src?: ImageMetadata;
   alt?: string;
+  /** Path to a video in `public/`, e.g. '/Hero.mp4'. Takes priority over `src`. */
+  video?: string;
+  /** Still frame for the video. */
+  poster?: ImageMetadata;
+  /** CSS object-position for cropping, e.g. '55% 40%'. Defaults to center. */
+  focus?: string;
 }
 
 const slots = {
   hero: {
     label: 'Hero image',
-    brief: 'Musician portrait or live performance. Crops to 3:2 on tablets, so keep the subject centered.',
-    ratio: '4 / 5',
+    brief: 'Musician portrait or live performance',
+    // Landscape source: shown 5:4 on desktop, 16:9 on tablet, 4:3 on phones.
+    ratio: '5 / 4',
+    video: '/Hero.mp4',
+    poster: heroPoster,
+    focus: '56% 40%',
+    alt: 'A musician playing an acoustic guitar on a dark stage lit in teal, with smoke drifting behind.',
   },
   world: {
     label: 'World package image',

@@ -22,7 +22,7 @@ import { hero } from '../config/site';
       </div>
     </div>
 
-    <Media slot="hero" class="hero__media" eager sizes="(min-width: 1000px) 42vw, 100vw" />
+    <Media slot="hero" class="hero__media" eager sizes="(min-width: 1000px) 50vw, 100vw" />
   </div>
 </section>
 
@@ -32,7 +32,7 @@ import { hero } from '../config/site';
   }
   .hero__grid {
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--gutter);
     align-items: stretch;
   }
@@ -45,7 +45,7 @@ import { hero } from '../config/site';
   .hero__title {
     display: flex;
     flex-direction: column;
-    font-size: clamp(2.75rem, 6.5vw, 6.75rem);
+    font-size: clamp(2.75rem, 5.7vw, 6.25rem);
     padding-top: 0.1em;
   }
   .hero__line--2::before {
@@ -85,12 +85,12 @@ import { hero } from '../config/site';
     }
     .hero :global(.hero__media) {
       margin-top: 1rem;
-      aspect-ratio: 3 / 2;
+      aspect-ratio: 16 / 9;
     }
   }
   @media (max-width: 599px) {
     .hero :global(.hero__media) {
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 4 / 3;
       margin-inline: calc(var(--gutter) * -1);
     }
     .hero__actions .btn {

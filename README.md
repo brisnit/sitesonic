@@ -40,6 +40,12 @@ Each image is a named slot with a set aspect ratio. Until a slot has a file, it 
 
 Astro resizes the image and serves AVIF/WebP automatically.
 
+### The hero video
+
+The hero plays `public/Hero.mp4` (muted, looped) over a poster frame at `src/assets/images/hero-poster.jpg`. It pauses when scrolled off screen, has a pause/play button, and isn't downloaded at all for visitors who prefer reduced motion (they see the poster).
+
+To swap the video: replace `public/Hero.mp4`, then replace the poster with a still of the new video's **first frame** so there's no jump when playback starts. Crop and alt text are the `hero` slot's `focus` and `alt` in `src/config/images.ts`. Keep hero videos short (around 10 s) and under ~3 MB. The file doesn't need an audio track, since it always plays muted.
+
 ## Before launch: what still needs configuring
 
 Search the code for `TODO(launch)`.

@@ -1,10 +1,10 @@
 ---
 /**
- * An image slot. Renders the optimized image when the slot in
- * `src/config/images.ts` has a `src`; otherwise a labelled placeholder
- * at the slot's aspect ratio.
+ * An image slot. Renders, in order of preference: a looping muted video (with
+ * poster and pause button), the optimized image, or a labelled placeholder at
+ * the slot's aspect ratio. See `src/config/images.ts`.
  */
-import { Picture } from 'astro:assets';
+import { Picture, getImage } from 'astro:assets';
 import { images, type ImageKey } from '../config/images';
 
 interface Props {
@@ -19,11 +19,38 @@ interface Props {
 const { slot, sizes = '100vw', tone = 'light', eager = false, class: className } = Astro.props;
 const data = images[slot];
 const ratioLabel = data.ratio.replace(/\s/g, '').replace('/', ':');
+const focus = data.focus ?? '50% 50%';
+
+const poster = data.video && data.poster ? await getImage({ src: data.poster, format: 'webp', quality: 78 }) : null;
+const descId = `media-${slot}-desc`;
 ---
 
-<figure class:list={['media', `media--${tone}`, className]} style={`--ratio: ${data.ratio}`}>
+<figure class:list={['media', `media--${tone}`, className]} style={`--ratio: ${data.ratio}; --focus: ${focus}`}>
   {
-    data.src ? (
+    data.video ? (
+      <div class="media__video" data-media-video>
+        <video
+          muted
+          loop
+          playsinline
+          preload="none"
+          poster={poster?.src}
+          aria-describedby={data.alt ? descId : undefined}
+          data-src={data.video}
+        />
+        {data.alt && (
+          <span class="visually-hidden" id={descId}>
+            {data.alt}
+          </span>
+        )}
+        <button type="button" class="media__toggle" aria-pressed="false" data-video-toggle hidden>
+          <span class="visually-hidden" data-video-label>
+            Pause background video
+          </span>
+          <span class="media__icon" aria-hidden="true" />
+        </button>
+      </div>
+    ) : data.src ? (
       <Picture
         src={data.src}
         alt={data.alt ?? ''}
@@ -52,12 +79,69 @@ const ratioLabel = data.ratio.replace(/\s/g, '').replace('/', ':');
     overflow: hidden;
     background: var(--bg-sunk);
   }
-  .media :global(img) {
+  .media :global(img),
+  .media video {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: var(--focus);
     transition: transform 900ms var(--ease);
   }
+  .media__video {
+    position: absolute;
+    inset: 0;
+    background: #0c1f1c;
+  }
+
+  /* Pause / play control */
+  .media__toggle {
+    position: absolute;
+    right: clamp(0.75rem, 1.5vw, 1.25rem);
+    bottom: clamp(0.75rem, 1.5vw, 1.25rem);
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    border: 1.5px solid rgb(245 241 232 / 0.85);
+    background: rgb(22 20 15 / 0.55);
+    color: var(--bg);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition:
+      background-color var(--fast) var(--ease),
+      color var(--fast) var(--ease),
+      border-color var(--fast) var(--ease);
+  }
+  .media__toggle[hidden] {
+    display: none;
+  }
+  .media__toggle:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .media__toggle:focus-visible {
+    outline: 3px solid var(--bg);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px var(--ink);
+  }
+  /* Pause icon: two bars */
+  .media__icon {
+    width: 0.8rem;
+    height: 0.9rem;
+    border-inline: 0.26rem solid currentColor;
+  }
+  /* Play icon: triangle */
+  .media__toggle[aria-pressed='true'] .media__icon {
+    width: 0;
+    height: 0;
+    margin-left: 0.2rem;
+    border-style: solid;
+    border-width: 0.5rem 0 0.5rem 0.8rem;
+    border-color: transparent transparent transparent currentColor;
+  }
+
   .media__placeholder {
     position: absolute;
     inset: 0;
@@ -109,3 +193,68 @@ const ratioLabel = data.ratio.replace(/\s/g, '').replace('/', ':');
     color: rgb(245 241 232 / 0.72);
   }
 </style>
+
+<script>
+  // Background videos: play muted when motion is allowed and the video is on
+  // screen; offer a pause button; never download under reduced motion.
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll<HTMLElement>('[data-media-video]').forEach((wrap) => {
+    const video = wrap.querySelector('video')!;
+    const toggle = wrap.querySelector<HTMLButtonElement>('[data-video-toggle]')!;
+    const label = toggle.querySelector<HTMLElement>('[data-video-label]')!;
+    let userPaused = false;
+    let visible = true;
+
+    const load = () => {
+      if (!video.src && video.dataset.src) {
+        video.src = video.dataset.src;
+        video.preload = 'auto';
+      }
+    };
+    const setPressed = (paused: boolean) => {
+      toggle.setAttribute('aria-pressed', String(paused));
+      label.textContent = paused ? 'Play background video' : 'Pause background video';
+    };
+    const play = () => {
+      load();
+      video.play().then(
+        () => setPressed(false),
+        () => setPressed(true), // Autoplay blocked (e.g. low-power mode): leave the poster.
+      );
+    };
+    const sync = () => {
+      if (userPaused || reduce.matches || !visible) video.pause();
+      else play();
+    };
+
+    toggle.hidden = false;
+    toggle.addEventListener('click', () => {
+      userPaused = !video.paused;
+      setPressed(userPaused);
+      if (userPaused) video.pause();
+      else play();
+    });
+
+    if (reduce.matches) {
+      userPaused = true;
+      setPressed(true);
+    }
+    reduce.addEventListener('change', () => {
+      if (reduce.matches) {
+        userPaused = true;
+        setPressed(true);
+      }
+      sync();
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        sync();
+      }).observe(wrap);
+    } else {
+      sync();
+    }
+  });
+</script>
