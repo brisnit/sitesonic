@@ -9,6 +9,8 @@
  */
 
 import { brand } from '../config/site';
+import { deliver } from './inbox';
+import { track } from './analytics';
 
 type PackageInfo = { id: string; name: string; price: number };
 
@@ -405,19 +407,12 @@ function init(dialog: HTMLDialogElement, form: HTMLFormElement) {
     setBusy(true);
     setStatus('Sending your request…');
     try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(emailFields(data)),
+      await deliver(endpoint, emailFields(data));
+      track('Lead', {
+        content_name: data.package?.name,
+        value: data.package?.price,
+        currency: 'USD',
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      // Some services (FormSubmit) answer 200 with { success: "false" }, e.g.
-      // before the inbox is activated. Only a confirmed delivery is a success.
-      const body = await res.json().catch(() => null);
-      if (body && (body.success === false || body.success === 'false' || body.ok === false)) {
-        console.warn('Request not delivered:', body.message ?? body);
-        throw new Error('Not delivered');
-      }
       clearStatus();
       showView('success');
       $<HTMLElement>('.result__title', views.success).focus();

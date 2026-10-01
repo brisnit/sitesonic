@@ -24,20 +24,36 @@ export const brand = {
 const B = brand.name;
 
 // ── Contact & social ────────────────────────────────────────────────────────
-// TODO(launch): add a real contact email. While empty, the footer shows a
-// clearly marked placeholder instead of a link.
+// Visitors reach you through the contact form (footer), which emails the
+// inbox tied to `intake.web3formsKey`. No address is shown on the page.
 export const contact = {
-  email: '',
-  placeholder: 'Contact email coming soon',
+  heading: 'Contact',
+  cta: 'Send us a message',
+  title: 'Send us a message',
+  intro: 'Questions about a package, timing, or whether we’re the right fit? We’ll reply by email.',
+  success: {
+    title: 'Message sent.',
+    body: 'Thanks for reaching out. We’ll reply to the email you gave us.',
+  },
 };
 
-// TODO(launch): add profile URLs. Entries with an empty `href` render as
-// labelled placeholders, not links.
+// Social profiles. Only entries with an `href` are shown, so leave a
+// profile empty until it's live. Instagram and Facebook matter most:
+// they're what people check before buying, and what Meta ads run from.
 export const socials: { label: string; href: string }[] = [
   { label: 'Instagram', href: '' },
+  { label: 'Facebook', href: '' },
   { label: 'TikTok', href: '' },
   { label: 'YouTube', href: '' },
 ];
+
+// ── Analytics ───────────────────────────────────────────────────────────────
+// Meta Pixel ID (Events Manager → Data sources → your pixel). Loads only when
+// set. Tracks PageView, Lead (a package request is delivered), Contact (a
+// message is delivered), and InitiateCheckout (a Pay button on /pay).
+export const analytics = {
+  metaPixelId: '',
+};
 
 // ── Navigation ──────────────────────────────────────────────────────────────
 export const nav = [
@@ -326,6 +342,9 @@ export const intake = {
     body: 'Online requests aren’t switched on yet, so this hasn’t been sent. Use “Email this request” and your answers will be filled in, or copy them below.',
   },
 };
+
+/** Where forms post: Web3Forms when a key is set, else `intake.endpoint`. */
+export const inboxEndpoint = intake.web3formsKey ? 'https://api.web3forms.com/submit' : intake.endpoint;
 
 // ── Payment page (/pay) ─────────────────────────────────────────────────────
 // Not linked from the site and hidden from search engines. Send artists

@@ -1,0 +1,231 @@
+---
+/**
+ * General contact form, opened by any `[data-open-contact]` element.
+ * Emails the studio inbox via the same service as package requests, so no
+ * address appears on the page. Behaviour lives in `src/scripts/contact.ts`.
+ */
+import { brand, contact, inboxEndpoint, intake } from '../config/site';
+---
+
+<dialog class="contact" aria-labelledby="contact-title" aria-describedby="contact-intro" data-contact>
+  <div class="contact__panel">
+    <header class="contact__bar">
+      <h2 id="contact-title" class="contact__title" tabindex="-1">{contact.title}</h2>
+      <button type="button" class="contact__close" data-contact-close>
+        <span class="visually-hidden">Close</span>
+        <span aria-hidden="true" class="contact__x"></span>
+      </button>
+    </header>
+
+    <div class="contact__body">
+      <div data-contact-view="form">
+        <p id="contact-intro" class="contact__intro">{contact.intro}</p>
+        <form
+          class="cform"
+          novalidate
+          data-contact-form
+          data-endpoint={inboxEndpoint}
+          data-access-key={intake.web3formsKey}
+          data-brand={brand.name}
+        >
+          <div class="cfield">
+            <label class="cfield__label" for="c-name">Your name</label>
+            <input class="cfield__input" id="c-name" name="name" type="text" autocomplete="name" required aria-describedby="c-name-error" />
+            <p class="cfield__error" id="c-name-error" data-error-for="name"></p>
+          </div>
+          <div class="cfield">
+            <label class="cfield__label" for="c-email">Email</label>
+            <input class="cfield__input" id="c-email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="c-email-error" />
+            <p class="cfield__error" id="c-email-error" data-error-for="email"></p>
+          </div>
+          <div class="cfield">
+            <label class="cfield__label" for="c-message">Message</label>
+            <textarea class="cfield__input" id="c-message" name="message" rows="5" required aria-describedby="c-message-error"></textarea>
+            <p class="cfield__error" id="c-message-error" data-error-for="message"></p>
+          </div>
+
+          <div class="hp" aria-hidden="true">
+            <label>Leave this empty <input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <button type="submit" class="btn btn--accent btn--block" data-contact-submit>
+            <span data-contact-label>Send message</span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </button>
+          <p class="contact__status" role="status" aria-live="polite" data-contact-status></p>
+        </form>
+      </div>
+
+      <div class="contact__result" data-contact-view="success" hidden>
+        <p class="contact__mark" aria-hidden="true">✓</p>
+        <h3 class="contact__done" tabindex="-1">{contact.success.title}</h3>
+        <p class="contact__intro">{contact.success.body}</p>
+        <button type="button" class="btn" data-contact-close>Close</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .contact {
+    margin: auto; /* the global reset removes the dialog's default centering */
+    width: min(34rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--ink);
+    overflow: auto;
+  }
+  .contact::backdrop {
+    background: rgb(22 20 15 / 0.55);
+    backdrop-filter: blur(2px);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .contact[open] {
+      animation: contact-in 320ms var(--ease);
+    }
+  }
+  @keyframes contact-in {
+    from {
+      opacity: 0;
+      transform: translateY(1rem);
+    }
+  }
+  .contact__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .contact__title {
+    font-size: var(--fs-m);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .contact__title:focus,
+  .contact__done:focus {
+    outline: none;
+  }
+  .contact__close {
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: none;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    transition: background-color var(--fast) var(--ease);
+  }
+  .contact__close:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .contact__x::before,
+  .contact__x::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1rem;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  .contact__x::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+  .contact__body {
+    padding: 1.5rem 1.5rem 2rem;
+  }
+  .contact__intro {
+    color: var(--ink-soft);
+  }
+  .cform {
+    margin-top: 1.5rem;
+  }
+  .cfield {
+    margin-bottom: 1.25rem;
+  }
+  .cfield__label {
+    display: block;
+    font-weight: 650;
+    margin-bottom: 0.4rem;
+  }
+  .cfield__input {
+    display: block;
+    width: 100%;
+    min-height: 3.1rem;
+    padding: 0.7rem 0.9rem;
+    border: 1.5px solid var(--ink);
+    border-radius: 6px;
+    background: #fffdf8;
+    font-size: 1.0625rem;
+    line-height: 1.4;
+  }
+  textarea.cfield__input {
+    resize: vertical;
+  }
+  .cfield__input:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 1.5px var(--ink),
+      0 0 0 5px var(--accent);
+  }
+  .cfield__input[aria-invalid='true'] {
+    border-color: var(--error);
+    box-shadow: 0 0 0 1px var(--error);
+  }
+  .cfield__error {
+    color: var(--error);
+    font-weight: 600;
+    font-size: var(--fs-s);
+    margin-top: 0.4rem;
+  }
+  .cfield__error:empty,
+  .contact__status:empty {
+    display: none;
+  }
+  .contact__status {
+    margin-top: 0.9rem;
+    font-weight: 600;
+  }
+  .contact__status[data-tone='error'] {
+    color: var(--error);
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .contact__mark {
+    display: grid;
+    place-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+  }
+  .contact__done {
+    font-size: var(--fs-l);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 0.75rem;
+  }
+  .contact__result .btn {
+    margin-top: 1.5rem;
+  }
+</style>
+
+<script>
+  import '../scripts/contact';
+</script>

@@ -1,6 +1,8 @@
 ---
 import Wordmark from './Wordmark.astro';
 import { brand, contact, nav, socials } from '../config/site';
+
+const liveSocials = socials.filter((s) => s.href);
 ---
 
 <footer class="footer on-dark">
@@ -24,39 +26,30 @@ import { brand, contact, nav, socials } from '../config/site';
       </nav>
 
       <div class="footer__col">
-        <h2 class="footer__heading">Contact</h2>
-        {
-          contact.email ? (
-            <a class="link" href={`mailto:${contact.email}`}>
-              {contact.email}
-            </a>
-          ) : (
-            <p class="footer__placeholder">{contact.placeholder}</p>
-          )
-        }
+        <h2 class="footer__heading">{contact.heading}</h2>
+        <button type="button" class="link footer__contact" data-open-contact>
+          {contact.cta}
+          <span class="footer__arrow" aria-hidden="true">→</span>
+        </button>
       </div>
 
-      <div class="footer__col">
-        <h2 class="footer__heading">Follow</h2>
-        <ul role="list">
-          {
-            socials.map((s) =>
-              s.href ? (
+      {
+        liveSocials.length > 0 && (
+          <div class="footer__col">
+            <h2 class="footer__heading">Follow</h2>
+            <ul role="list">
+              {liveSocials.map((s) => (
                 <li>
                   <a class="link" href={s.href} rel="me noopener" target="_blank">
                     {s.label}
                     <span class="visually-hidden"> (opens in a new tab)</span>
                   </a>
                 </li>
-              ) : (
-                <li class="footer__placeholder">
-                  {s.label} <span class="footer__soon">(link coming soon)</span>
-                </li>
-              ),
-            )
-          }
-        </ul>
-      </div>
+              ))}
+            </ul>
+          </div>
+        )
+      }
     </div>
 
     <div class="footer__mark">
@@ -106,11 +99,26 @@ import { brand, contact, nav, socials } from '../config/site';
   .footer__col .link:hover {
     text-decoration-color: var(--accent);
   }
-  .footer__placeholder {
-    color: var(--ink-soft);
+  .footer__contact {
+    display: inline-flex;
+    gap: 0.4em;
+    padding: 0.25rem 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    font-size: inherit;
+    font-weight: 600;
+    text-decoration-color: var(--rule);
   }
-  .footer__soon {
-    font-size: var(--fs-s);
+  .footer__contact:hover {
+    text-decoration-color: var(--accent);
+  }
+  .footer__arrow {
+    display: inline-block;
+    transition: transform var(--fast) var(--ease);
+  }
+  .footer__contact:hover .footer__arrow {
+    transform: translateX(0.2em);
   }
   .footer__mark {
     margin-top: clamp(4rem, 9vw, 8rem);

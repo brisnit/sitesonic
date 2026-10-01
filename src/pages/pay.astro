@@ -6,6 +6,7 @@
  */
 import Base from '../layouts/Base.astro';
 import Wordmark from '../components/Wordmark.astro';
+import ContactDialog from '../components/ContactDialog.astro';
 import { brand, formatPrice, packages, payPage } from '../config/site';
 ---
 
@@ -30,7 +31,7 @@ import { brand, formatPrice, packages, payPage } from '../config/site';
               <p class="plan__tag">{p.tagline}</p>
             </div>
             <p class="plan__price">{formatPrice(p.price)}</p>
-            <a class="btn plan__btn" href={p.paymentLink} rel="noopener">
+            <a class="btn plan__btn" href={p.paymentLink} rel="noopener" data-checkout={p.name} data-price={p.price}>
               Pay for {p.name}
               <span class="arrow" aria-hidden="true">
                 →
@@ -46,8 +47,13 @@ import { brand, formatPrice, packages, payPage } from '../config/site';
       <p>
         {payPage.notYet} <a class="link" href="/#packages">Choose your package</a>.
       </p>
+      <p>
+        Questions before you pay?
+        <button type="button" class="link pay__contact" data-open-contact>Send us a message</button>.
+      </p>
     </div>
   </main>
+  <ContactDialog />
 
   <footer class="wrap foot">
     <p>© {new Date().getFullYear()} {brand.name}</p>
@@ -150,6 +156,15 @@ import { brand, formatPrice, packages, payPage } from '../config/site';
     margin-top: 0.75rem;
   }
 
+  .pay__contact {
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--ink);
+    font-size: inherit;
+    font-weight: 600;
+  }
+
   .foot {
     padding-block: 1.5rem 2rem;
     border-top: 1px solid var(--rule);
@@ -171,6 +186,14 @@ import { brand, formatPrice, packages, payPage } from '../config/site';
 </style>
 
 <script>
+  import { track } from '../scripts/analytics';
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-checkout]').forEach((a) =>
+    a.addEventListener('click', () =>
+      track('InitiateCheckout', { content_name: a.dataset.checkout, value: Number(a.dataset.price), currency: 'USD' }),
+    ),
+  );
+
   // /pay?package=world highlights that package and scrolls to it.
   const id = new URLSearchParams(location.search).get('package');
   const plan = id ? document.querySelector<HTMLElement>(`[data-plan="${CSS.escape(id)}"]`) : null;

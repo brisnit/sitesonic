@@ -68,9 +68,18 @@ Search the code for `TODO(launch)`.
    - It never shows a success state unless the service confirms delivery.
    - FormSubmit was tried first but its endpoint returned HTTP 500 for every request (2026-09-30).
 2. **Payments (Stripe Payment Links).** Each package's `paymentLink` in `src/config/site.ts` points to a Stripe Payment Link. The flow is request first, pay after: once you've confirmed an artist's scope, send them `https://<your-domain>/pay?package=launch` (or `identity` / `world`), which highlights their package. `/pay` isn't linked from the site and is marked `noindex`. To change a price, update both the Stripe product and `price` in the config.
-3. **Production URL.** Set `SITE_URL` (in `.env` or `astro.config.mjs`) for canonical and social image URLs.
-4. **Contact email and social links.** In `src/config/site.ts` (`contact`, `socials`). Empty values render as labeled placeholders.
-5. **Supported photo locations.** The copy says "supported locations" generically. List them in the FAQ once they're decided.
+3. **Production URL.** `https://sitesonic.online`, set in `astro.config.mjs` (override with `SITE_URL`). Used for canonical, `og:url`, and `og:image`.
+4. **Social links.** Add profile URLs to `socials` in `src/config/site.ts`. The footer's Follow column appears once at least one link is set. Instagram and Facebook matter most.
+5. **Meta Pixel.** Paste your Pixel ID into `analytics.metaPixelId` in `src/config/site.ts`. Until then, nothing loads. Events tracked:
+   - `PageView` on every page
+   - `Lead` when a package request is delivered (with package name and price)
+   - `Contact` when a contact message is delivered
+   - `InitiateCheckout` when a Pay button on `/pay` is clicked
+
+   Using the pixel means the site needs a privacy policy that discloses it (a Meta requirement).
+6. **Supported photo locations.** The copy says "supported locations" generically. List them in the FAQ once they're decided.
+
+Visitors contact you through the footer's "Send us a message" form, which emails the Web3Forms inbox. No address appears on the page. The only place the address appears is the request form's "Email your request instead" fallback, which shows only if sending fails (`intake.fallbackEmail`; set it to `''` to remove).
 
 ## Request payload
 

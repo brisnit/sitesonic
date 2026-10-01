@@ -2,6 +2,7 @@
 import '@fontsource-variable/archivo/wdth.css';
 import '../styles/global.css';
 import { brand } from '../config/site';
+import MetaPixel from '../components/MetaPixel.astro';
 
 interface Props {
   title?: string;
@@ -49,6 +50,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta name="twitter:image" content={ogImage} />
 
     <script is:inline>document.documentElement.classList.add('js');</script>
+    <MetaPixel />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>

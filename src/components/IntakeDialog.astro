@@ -4,10 +4,8 @@
  * Also opens on load when the URL has `?package=<id>`.
  * Behaviour lives in `src/scripts/intake.ts`.
  */
-import { formatPrice, intake, packages } from '../config/site';
+import { formatPrice, inboxEndpoint as endpoint, intake, packages } from '../config/site';
 
-const WEB3FORMS = 'https://api.web3forms.com/submit';
-const endpoint = intake.web3formsKey ? WEB3FORMS : intake.endpoint;
 const connected = endpoint.length > 0;
 const pkgData = packages.map(({ id, name, price }) => ({ id, name, price }));
 ---
